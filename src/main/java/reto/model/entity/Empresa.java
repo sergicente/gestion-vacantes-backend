@@ -1,5 +1,6 @@
 package reto.model.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,8 +27,10 @@ public class Empresa {
     private String nombreEmpresa;
     private String direccionFiscal;
     private String pais;
+    @Column(name = "email_empresa") // Nombre diferente en la base de datos
+    private String emailEmpresa;
 
     @ManyToOne
-    @JoinColumn(name = "email", referencedColumnName = "email")
+    @JoinColumn(name = "email_usuario", referencedColumnName = "email") // Relación con Usuario
     private Usuario usuario;
 }

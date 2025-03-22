@@ -6,4 +6,6 @@ import reto.model.entity.Categoria;
 
 public interface CategoriaRepository extends JpaRepository<Categoria, Integer>{
 
+	Categoria findByNombre (String nombre);
+
 }

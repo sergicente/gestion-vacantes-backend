@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import reto.model.entity.Empresa;
+import reto.model.entity.Vacante;
 import reto.model.repository.EmpresaRepository;
 @Service
 public class EmpresaServiceImpl implements EmpresaService{
@@ -30,16 +31,22 @@ public class EmpresaServiceImpl implements EmpresaService{
 
 	@Override
 	public Empresa modificar(Empresa entidad) {
-		try {
-			if(erepo.existsById(entidad.getIdEmpresa())) {
-				return erepo.save(entidad);
-			}else {
-				return null;
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+	    return erepo.findById(entidad.getIdEmpresa()).map(empresaExistente -> {
+	        if (entidad.getNombreEmpresa() != null) {
+	            empresaExistente.setNombreEmpresa(entidad.getNombreEmpresa());
+	        }
+	        if (entidad.getDireccionFiscal() != null) {
+	            empresaExistente.setDireccionFiscal(entidad.getDireccionFiscal());
+	        }
+	        if (entidad.getPais() != null) {
+	            empresaExistente.setPais(entidad.getPais());
+	        }
+	        if (entidad.getEmailEmpresa() != null) {
+	            empresaExistente.setEmailEmpresa(entidad.getEmailEmpresa());
+	        }
+
+	        return erepo.save(empresaExistente);
+	    }).orElseThrow();
 	}
 
 	@Override
@@ -55,6 +62,12 @@ public class EmpresaServiceImpl implements EmpresaService{
 			e.printStackTrace();
 			return -1;
 		}
+	}
+
+	@Override
+	public List<Vacante> buscarVacantesPorEmpresa(Empresa empresa) {
+		// TODO Auto-generated method stub
+	     return erepo.findVacantesByEmpresa(empresa);
 	}
 
 }

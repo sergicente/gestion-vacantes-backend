@@ -59,4 +59,10 @@ public class CategoriaServiceImpl implements CategoriaService{
 		}
 	}
 
+	@Override
+	public Categoria findByNombre(String nombreCategoria) {
+		// TODO Auto-generated method stub
+		return crepo.findByNombre(nombreCategoria);
+	}
+
 }

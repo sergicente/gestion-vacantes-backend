@@ -1,5 +1,6 @@
 package reto.model.service;
 
+import java.security.SecureRandom;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,29 @@ public class UsuarioServiceImpl implements UsuarioService{
 	public List<Usuario> buscarTodos() {
 		return urepo.findAll();
 	}
+	
 
 	@Override
 	public Usuario insertar(Usuario entidad) {
-	    return urepo.save(entidad);
+	   String password = generarPassword();
+	   
+	   entidad.setPassword(password);
+	   return urepo.save(entidad);
 	}
+
+	private String generarPassword() {
+		    String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%";
+		    SecureRandom random = new SecureRandom();
+		    StringBuilder password = new StringBuilder();
+
+		    for (int i = 0; i < 10; i++) { 
+		        int index = random.nextInt(caracteres.length());
+		        password.append(caracteres.charAt(index));
+		    }
+		    
+		    return password.toString();
+		}
+	
 
 	@Override
 	public Usuario modificar(Usuario entidad) {
