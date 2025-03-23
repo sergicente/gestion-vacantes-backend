@@ -83,7 +83,7 @@ public class VacanteController {
     }
 
 
-    @PutMapping("/{id}")
+    @PutMapping("/{idVacante}")
     public ResponseEntity<VacanteDto> modificarVacante(@PathVariable Integer idVacante, @RequestBody VacanteDto vacanteDto) {
         Vacante vacanteExistente = vservice.buscar(idVacante);
         if (vacanteExistente == null) {
@@ -97,7 +97,7 @@ public class VacanteController {
     }
 
     // Cancelar vacante (cambiar el estado a CANCELADA)
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{idVacante}")
     public ResponseEntity<Void> cancelarVacante(@PathVariable Integer idVacante) {
         Vacante vacante = vservice.buscar(idVacante);
         if (vacante == null) {
@@ -108,7 +108,7 @@ public class VacanteController {
     }
 
     // Ver solicitudes de una vacante específica
-    @GetMapping("/{vacanteId}/solicitudes")
+    @GetMapping("/{idVacante}/solicitudes")
     public ResponseEntity<List<SolicitudDto>> verSolicitudes(@PathVariable Integer idVacante) {
         List<Solicitud> solicitudes = vservice.buscarSolicitudesPorVacante(idVacante);
         List<SolicitudDto> solicitudesDto = solicitudes.stream()

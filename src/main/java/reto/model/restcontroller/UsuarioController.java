@@ -33,7 +33,7 @@ public class UsuarioController {
         return uservice.buscarTodos();
     }
     
-    @GetMapping("/{id}")
+    @GetMapping("/{email}")
     public ResponseEntity<UsuarioDto> obtenerUsuarioPorId(@PathVariable String email) {
         Usuario usuario = uservice.buscar(email);
         if (usuario == null) {
@@ -53,7 +53,7 @@ public class UsuarioController {
     }
 
     // Eliminar un usuario
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{email}")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable String email) {
         Usuario usuario = uservice.buscar(email);
         if (usuario == null) {
@@ -64,18 +64,41 @@ public class UsuarioController {
     }
 
     // Modificar un usuario existente
-    @PutMapping("/{id}")
+    @PutMapping("/{email}")
+
     public ResponseEntity<UsuarioDto> modificarUsuario(@PathVariable String email, @RequestBody UsuarioDto usuarioDto) {
+        // Verificar si el objeto usuarioDto es null
+        if (usuarioDto == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 Bad Request si el DTO es null
+        }
+
+        // Verificar si los campos obligatorios están presentes en el DTO
+        if (usuarioDto.getNombre() == null || usuarioDto.getApellidos() == null || usuarioDto.getRol() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 Bad Request si falta algún campo esencial
+        }
+
+        // Buscar el usuario en la base de datos
         Usuario usuarioExistente = uservice.buscar(email); 
         if (usuarioExistente == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);  
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);  // 404 si el usuario no existe
         }
+
+        // Mapear el DTO al modelo de entidad Usuario
         Usuario usuario = modelMapper.map(usuarioDto, Usuario.class); 
-        usuario.setEmail(email);
+        usuario.setEmail(email);  // Asegurarse de que el email no se sobrescriba
+
+        // Modificar el usuario
         Usuario usuarioModificado = uservice.modificar(usuario);  
+        if (usuarioModificado == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);  // 500 si la modificación falla
+        }
+
+        // Mapear el usuario modificado a un DTO para la respuesta
         UsuarioDto usuarioDtoRespuesta = modelMapper.map(usuarioModificado, UsuarioDto.class);  
-        return new ResponseEntity<>(usuarioDtoRespuesta, HttpStatus.OK);  
+
+        return new ResponseEntity<>(usuarioDtoRespuesta, HttpStatus.OK);  // 200 OK si la modificación es exitosa
     }
+
 
 }
 

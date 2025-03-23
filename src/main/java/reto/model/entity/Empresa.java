@@ -1,5 +1,7 @@
 package reto.model.entity;
 
+import org.antlr.v4.runtime.misc.NotNull;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,7 +24,7 @@ public class Empresa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idEmpresa;
-
+    @NotNull
     private String cif;
     private String nombreEmpresa;
     private String direccionFiscal;

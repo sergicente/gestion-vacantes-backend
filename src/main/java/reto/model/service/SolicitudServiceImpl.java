@@ -69,21 +69,20 @@ public class SolicitudServiceImpl implements SolicitudService{
 		}
 	}
 		
-	public Solicitud enviarSolicitud (Integer vacanteId, String email, Solicitud solicitud) {
-		Vacante vacante = vserv.buscar(vacanteId);
-		Usuario usuario = userv.buscar(email);
-		
-		if (vacante.getEstatus() != Vacante.Estatus.CREADA) {
-			throw new IllegalArgumentException("La vacante no está disponible para postularse.");
-		}
-		
-		solicitud.setVacante(vacante);
-		solicitud.setUsuario(usuario);
-		solicitud.setEstado(0);
-		return srepo.save(solicitud);
-			
-			
-		}
+	public Solicitud enviarSolicitud(Solicitud solicitud) {
+	    Vacante vacante = vserv.buscar(solicitud.getVacante().getIdVacante());
+	    Usuario usuario = userv.buscar(solicitud.getUsuario().getEmail());
+
+	    if (vacante.getEstatus() != Vacante.Estatus.CREADA) {
+	        throw new IllegalArgumentException("La vacante no está disponible para postularse.");
+	    }
+
+	    solicitud.setVacante(vacante);
+	    solicitud.setUsuario(usuario);
+	    solicitud.setEstado(0); 
+	    return srepo.save(solicitud);
+	}
+
 	public List <Solicitud> findBySolicitudPorUsuario (String email) {
 		return srepo.findByUsuarioEmail(email);
 	}
