@@ -27,10 +27,10 @@ public class Empresa {
     private String nombreEmpresa;
     private String direccionFiscal;
     private String pais;
-    @Column(name = "email_empresa") // Nombre diferente en la base de datos
+    @Column(name = "email") // Nombre diferente en la base de datos
     private String emailEmpresa;
 
-    @ManyToOne
-    @JoinColumn(name = "email_usuario", referencedColumnName = "email") // Relación con Usuario
-    private Usuario usuario;
+//    @ManyToOne
+//    @JoinColumn(name = "email_usuario", referencedColumnName = "email") // Relación con Usuario
+//    private Usuario usuario;
 }
