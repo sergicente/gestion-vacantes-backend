@@ -14,8 +14,8 @@ public class VacanteServiceImpl implements VacanteService{
 	
 	@Autowired
 	private VacanteRepository vrepo;
-	@Autowired
-	private SolicitudService sserv;
+//	@Autowired
+//	private SolicitudService sserv;
 	@Autowired
 	private CategoriaService cserv;
 
@@ -76,17 +76,16 @@ public class VacanteServiceImpl implements VacanteService{
         vacanteExistente.setEstatus((Estatus.CANCELADA));
         vrepo.save(vacanteExistente);
     }
-    public void asignarVacante (Integer vacanteId, Integer solicitudId) {
-
-        Vacante vacante = buscar(vacanteId);
-        Solicitud solicitud = sserv.buscar(solicitudId);
-        
-        vacante.setEstatus(Estatus.CUBIERTA);
+    
+    
+    public void asignarVacante(Vacante vacante, Solicitud solicitud) {
+        vacante.setEstatus(Vacante.Estatus.CUBIERTA);
         solicitud.setEstado(1);
         vrepo.save(vacante);
-        sserv.modificar(solicitud);
-        
-    	 }
+    }
+    
+    
+    
     public List<Vacante> filtrarVacantesPorCategoria(String nombreCategoria) {
         Categoria categoria = cserv.findByNombre(nombreCategoria);
         return vrepo.findByCategoria(categoria);
@@ -103,6 +102,8 @@ public class VacanteServiceImpl implements VacanteService{
 		// TODO Auto-generated method stub
 		   return vrepo.findSolicitudesByVacanteId(idVacante);
 	}
+
+
 
 
 }

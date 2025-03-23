@@ -10,7 +10,7 @@ public interface VacanteService extends InterfaceGenericoCrud<Vacante, Integer>{
 	
 	 Vacante publicarVacante(Vacante vacante);
 	 void eliminarVacante(Vacante vacante);
-	 void asignarVacante(Integer vacanteId, Integer solicitudId);
+	 void asignarVacante(Vacante vacante, Solicitud solicitud);
 
 	List<Vacante> buscarVacantesPorEmpresa(Empresa empresa);
 	List<Solicitud> buscarSolicitudesPorVacante(Integer idVacante);

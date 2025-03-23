@@ -30,6 +30,8 @@ public class VacanteController {
 	
 	@Autowired
 	private VacanteService vservice;
+	@Autowired
+	private SolicitudService sservice;
 	  @Autowired
 	private ModelMapper modelMapper;
 
@@ -67,7 +69,16 @@ public class VacanteController {
  
     @PostMapping("/{vacanteId}/asignar/{solicitudId}")
     public ResponseEntity<Void> asignarVacanteACandidato(@PathVariable Integer vacanteId, @PathVariable Integer solicitudId) {
-        vservice.asignarVacante(vacanteId, solicitudId); 
+        
+    	Vacante vacante = vservice.buscar(vacanteId);
+    	Solicitud solicitud = sservice.buscar(solicitudId);
+
+    	if (vacante != null && solicitud != null) {
+    		vservice.asignarVacante(vacante, solicitud);
+    	    solicitud.setEstado(1);
+    	    sservice.modificar(solicitud);
+    	}
+    	
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
