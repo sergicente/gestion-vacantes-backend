@@ -1,19 +1,14 @@
 package reto.model.service;
 
 import java.security.SecureRandom;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import reto.model.entity.Categoria;
-import reto.model.entity.Empresa;
-import reto.model.entity.Solicitud;
 import reto.model.entity.Usuario;
-import reto.model.repository.CategoriaRepository;
-import reto.model.repository.EmpresaRepository;
-import reto.model.repository.SolicitudRepository;
 import reto.model.repository.UsuarioRepository;
+
 @Service
 public class UsuarioServiceImpl implements UsuarioService{
 	
