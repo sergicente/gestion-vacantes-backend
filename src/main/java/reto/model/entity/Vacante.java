@@ -45,7 +45,4 @@ public class Vacante {
     @JoinColumn(name = "id_empresa")
     private Empresa empresa;
 
-    public enum Estatus {
-        CREADA, CUBIERTA, CANCELADA
-    }
 }

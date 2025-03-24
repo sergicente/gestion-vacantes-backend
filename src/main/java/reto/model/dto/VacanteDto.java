@@ -1,15 +1,23 @@
 package reto.model.dto;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.Objects;
 
+import java.time.LocalDate;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import reto.model.entity.Categoria;
 import reto.model.entity.Empresa;
 
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class VacanteDto implements Serializable {
-    private int idVacante;
+    
+	private static final long serialVersionUID = 1L;
+	
+	private int idVacante;
     private String nombre;
     private String descripcion;
     private LocalDate fecha;
@@ -20,117 +28,7 @@ public class VacanteDto implements Serializable {
     private Empresa empresa;
     private Categoria categoria;
 
-    public int getIdVacante() {
-        return idVacante;
-    }
 
-    public void setIdVacante(int idVacante) {
-        this.idVacante = idVacante;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public LocalDate getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
-    }
-
-    public double getSalario() {
-        return salario;
-    }
-
-    public void setSalario(double salario) {
-        this.salario = salario;
-    }
-
-    public boolean isDestacado() {
-        return destacado;
-    }
-
-    public void setDestacado(boolean destacado) {
-        this.destacado = destacado;
-    }
-
-    public String getImagen() {
-        return imagen;
-    }
-
-    public void setImagen(String imagen) {
-        this.imagen = imagen;
-    }
-
-    public String getDetalles() {
-        return detalles;
-    }
-
-    public void setDetalles(String detalles) {
-        this.detalles = detalles;
-    }
-
-    public Empresa getEmpresa() {
-        return empresa;
-    }
-
-    public void setEmpresa(Empresa empresa) {
-        this.empresa = empresa;
-    }
-
-    public Categoria getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(idVacante);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!(obj instanceof VacanteDto))
-            return false;
-        VacanteDto other = (VacanteDto) obj;
-        return idVacante == other.idVacante;
-    }
-
-    public VacanteDto(int idVacante, String nombre, String descripcion, LocalDate fecha, double salario,
-                      boolean destacado, String imagen, String detalles, Empresa empresa, Categoria categoria) {
-        this.idVacante = idVacante;
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.fecha = fecha;
-        this.salario = salario;
-        this.destacado = destacado;
-        this.imagen = imagen;
-        this.detalles = detalles;
-        this.empresa = empresa;
-        this.categoria = categoria;
-    }
-
-    public VacanteDto() {
-    }
 }
 
 

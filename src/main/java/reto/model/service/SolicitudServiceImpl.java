@@ -1,19 +1,16 @@
 package reto.model.service;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import reto.model.entity.Categoria;
-import reto.model.entity.Empresa;
+import reto.model.entity.Estatus;
 import reto.model.entity.Solicitud;
 import reto.model.entity.Usuario;
 import reto.model.entity.Vacante;
-import reto.model.repository.CategoriaRepository;
-import reto.model.repository.EmpresaRepository;
 import reto.model.repository.SolicitudRepository;
+
 @Service
 public class SolicitudServiceImpl implements SolicitudService{
 	
@@ -70,16 +67,19 @@ public class SolicitudServiceImpl implements SolicitudService{
 	}
 		
 	public Solicitud enviarSolicitud(Solicitud solicitud) {
-	    Vacante vacante = vserv.buscar(solicitud.getVacante().getIdVacante());
-	    Usuario usuario = userv.buscar(solicitud.getUsuario().getEmail());
+	    // Usa las entidades ya validadas en el controlador
+	    Vacante vacante = solicitud.getVacante();
+	    Usuario usuario = solicitud.getUsuario();
 
-	    if (vacante.getEstatus() != Vacante.Estatus.CREADA) {
-	        throw new IllegalArgumentException("La vacante no está disponible para postularse.");
+	    if (vacante == null || usuario == null) {
+	        throw new IllegalArgumentException("Vacante o usuario no proporcionados");
 	    }
 
-	    solicitud.setVacante(vacante);
-	    solicitud.setUsuario(usuario);
-	    solicitud.setEstado(0); 
+	    if (vacante.getEstatus() != Estatus.CREADA) {
+	        throw new IllegalArgumentException("La vacante no está disponible");
+	    }
+
+	    solicitud.setEstado(0);
 	    return srepo.save(solicitud);
 	}
 
