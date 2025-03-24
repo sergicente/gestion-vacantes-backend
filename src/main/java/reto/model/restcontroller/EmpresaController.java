@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import reto.model.dto.EmpresaDto;
 import reto.model.dto.VacanteDto;
 import reto.model.entity.Empresa;
+import reto.model.entity.Usuario;
 import reto.model.entity.Vacante;
+import reto.model.repository.UsuarioRepository;
 import reto.model.service.EmpresaService;
+import reto.model.service.UsuarioService;
 import reto.model.service.VacanteService;
 
 @RestController
@@ -25,9 +28,11 @@ public class EmpresaController {
 	private EmpresaService eservice;
 	@Autowired
 	private ModelMapper modelMapper;
+	@Autowired
+	private UsuarioRepository urepo;
 
 	// Obtener todas las empresas
-	@GetMapping
+	@GetMapping("/")
 	public ResponseEntity<List<EmpresaDto>> obtenerTodasLasEmpresas() {
 		List<Empresa> empresas = eservice.buscarTodos();
 		List<EmpresaDto> empresasDto = empresas.stream().map(empresa -> modelMapper.map(empresa, EmpresaDto.class))
@@ -46,13 +51,26 @@ public class EmpresaController {
 		return new ResponseEntity<>(empresaDto, HttpStatus.OK);
 	}
 
-	// Crear una nueva empresa
-	@PostMapping
-	public ResponseEntity<EmpresaDto> crearEmpresa(@RequestBody EmpresaDto empresaDto) {
-		Empresa empresa = modelMapper.map(empresaDto, Empresa.class);
-		Empresa nuevaEmpresa = eservice.insertar(empresa);
-		EmpresaDto empresaDtoRespuesta = modelMapper.map(nuevaEmpresa, EmpresaDto.class);
-		return new ResponseEntity<>(empresaDtoRespuesta, HttpStatus.CREATED);
+	@PostMapping("/")
+	public ResponseEntity<?> crearEmpresa(@RequestBody EmpresaDto empresaDto) {
+		try {
+			Empresa empresa = modelMapper.map(empresaDto, Empresa.class);
+
+			// Asignar el usuario existente a la empresa
+			Usuario usuario = urepo.findById(empresaDto.getEmail()).orElseThrow(
+					() -> new RuntimeException("Usuario no encontrado con email: " + empresaDto.getEmail()));
+
+			empresa.setUsuario(usuario);
+			empresa.setEmailEmpresa(empresaDto.getEmail());
+
+			Empresa nuevaEmpresa = eservice.insertar(empresa);
+			EmpresaDto respuesta = modelMapper.map(nuevaEmpresa, EmpresaDto.class);
+
+			return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+
+		} catch (Exception e) {
+			return new ResponseEntity<>("Error al crear empresa: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	// Modificar los datos de una empresa
@@ -70,14 +88,18 @@ public class EmpresaController {
 	}
 
 	// Eliminar una empresa
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> eliminarEmpresa(@PathVariable Integer id) {
-		Empresa empresa = eservice.buscar(id);
-		if (empresa == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	@DeleteMapping("/empresas/{id}")
+	public ResponseEntity<?> eliminarEmpresa(@PathVariable("id") Integer id) {
+		int resultado = eservice.borrar(id); // eserv = EmpresaService inyectado
+
+		switch (resultado) {
+		case 1:
+			return ResponseEntity.ok().build(); // 200 OK
+		case 0:
+			return ResponseEntity.notFound().build(); // 404 Not Found
+		default:
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar empresa");
 		}
-		eservice.borrar(id);
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	// Obtener todas las vacantes de una empresa (si la empresa tiene vacantes

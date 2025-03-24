@@ -1,7 +1,9 @@
 package reto.model.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -10,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -48,4 +51,8 @@ public class Vacante {
     public enum Estatus {
         CREADA, CUBIERTA, CANCELADA
     }
+    
+    @OneToMany(mappedBy = "vacante", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Solicitud> solicitudes;
+
 }
