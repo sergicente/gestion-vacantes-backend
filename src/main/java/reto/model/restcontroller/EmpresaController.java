@@ -2,13 +2,11 @@ package reto.model.restcontroller;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import reto.model.dto.EmpresaDto;
 import reto.model.dto.VacanteDto;
 import reto.model.entity.Empresa;
@@ -18,6 +16,7 @@ import reto.model.repository.UsuarioRepository;
 import reto.model.service.EmpresaService;
 import reto.model.service.UsuarioService;
 import reto.model.service.VacanteService;
+
 
 @RestController
 @RequestMapping("/api/empresas")
@@ -38,6 +37,12 @@ public class EmpresaController {
 		List<EmpresaDto> empresasDto = empresas.stream().map(empresa -> modelMapper.map(empresa, EmpresaDto.class))
 				.collect(Collectors.toList());
 		return new ResponseEntity<>(empresasDto, HttpStatus.OK);
+	}
+	
+	@GetMapping("/con-vacantes")
+	public ResponseEntity<List<EmpresaDto>> obtenerEmpresasConVacantes() {
+	    List<EmpresaDto> empresasDto = eservice.obtenerEmpresasConNumeroVacantes();
+	    return new ResponseEntity<>(empresasDto, HttpStatus.OK);
 	}
 
 	// Obtener una empresa por su ID

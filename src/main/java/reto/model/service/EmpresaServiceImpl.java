@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import reto.model.dto.EmpresaDto;
 import reto.model.entity.Empresa;
 import reto.model.entity.Usuario;
 import reto.model.entity.Vacante;
@@ -103,6 +104,11 @@ public class EmpresaServiceImpl implements EmpresaService {
 	public List<Vacante> buscarVacantesPorEmpresa(Empresa empresa) {
 		// TODO Auto-generated method stub
 		return erepo.findVacantesByEmpresa(empresa);
+	}
+
+	@Override
+	public List<EmpresaDto> obtenerEmpresasConNumeroVacantes() {
+		return erepo.obtenerEmpresasConNumeroVacantes();
 	}
 
 }

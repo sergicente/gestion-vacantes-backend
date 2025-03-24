@@ -40,7 +40,7 @@ public class SolicitudController {
 	private ModelMapper modelMapper;
 
 	// Endpoint para obtener todas las solicitudes
-	@GetMapping
+	@GetMapping("/todas")
 	public ResponseEntity<List<SolicitudDto>> obtenerTodasSolicitudes() {
 		List<Solicitud> solicitudes = sservice.buscarTodos();
 		List<SolicitudDto> solicitudesDto = solicitudes.stream()
@@ -59,37 +59,51 @@ public class SolicitudController {
 		return new ResponseEntity<>(solicitudDto, HttpStatus.OK);
 	}
 
-
-	// Endpoint para crear una nueva solicitud
-	@PostMapping
+	@PostMapping("/enviarSolicitud")
 	public ResponseEntity<SolicitudDto> crearSolicitud(@RequestBody SolicitudDto solicitudDto) {
-	    // Comprobamos si los datos necesarios están presentes
+	    // Validar campos requeridos
 	    if (solicitudDto.getEmail() == null || solicitudDto.getIdVacante() == 0) {
-	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Error 400 si faltan datos
+	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	    }
 
-	    // Recuperamos las entidades necesarias usando los datos del DTO
+	    // Obtener Usuario y Vacante
 	    Usuario usuario = uservice.buscar(solicitudDto.getEmail());
 	    Vacante vacante = vservice.buscar(solicitudDto.getIdVacante());
 
-	    // Verificamos si los objetos recuperados existen
 	    if (usuario == null || vacante == null) {
-	        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Error 404 si no se encuentra el usuario o vacante
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	    }
 
-	    // Creamos la nueva solicitud usando las entidades completas
+	    // Mapear DTO a Entidad (excepto relaciones)
 	    Solicitud nuevaSolicitud = new Solicitud();
+	    nuevaSolicitud.setFecha(LocalDate.now());
+	    nuevaSolicitud.setArchivo(solicitudDto.getArchivo());
+	    nuevaSolicitud.setComentarios(solicitudDto.getComentarios());
+	    nuevaSolicitud.setCurriculum(solicitudDto.getCurriculum());
 	    nuevaSolicitud.setUsuario(usuario);
 	    nuevaSolicitud.setVacante(vacante);
-	    nuevaSolicitud.setFecha(LocalDate.now());
-        nuevaSolicitud.setEstado(1); // O lo que sea adecuado
 
-	    // Llamamos al servicio para guardar la solicitud
-	    Solicitud solicitudGuardada = sservice.enviarSolicitud(nuevaSolicitud);
-	    // Convertimos la entidad guardada en un DTO para la respuesta
-	    SolicitudDto solicitudDtoRespuesta = modelMapper.map(solicitudGuardada, SolicitudDto.class);
-
-	    return new ResponseEntity<>(solicitudDtoRespuesta, HttpStatus.CREATED);
+	    try {
+	        Solicitud solicitudGuardada = sservice.enviarSolicitud(nuevaSolicitud);
+	        
+	        // Mapear entidad a DTO incluyendo relaciones
+	        SolicitudDto respuestaDto = new SolicitudDto();
+	        respuestaDto.setIdSolicitud(solicitudGuardada.getIdSolicitud());
+	        respuestaDto.setFecha(solicitudGuardada.getFecha());
+	        respuestaDto.setArchivo(solicitudGuardada.getArchivo());
+	        respuestaDto.setComentarios(solicitudGuardada.getComentarios());
+	        respuestaDto.setCurriculum(solicitudGuardada.getCurriculum());
+	        respuestaDto.setEstado(solicitudGuardada.getEstado());
+	        respuestaDto.setIdVacante(solicitudGuardada.getVacante().getIdVacante());
+	        respuestaDto.setEmail(solicitudGuardada.getUsuario().getEmail());
+	        
+	        return new ResponseEntity<>(respuestaDto, HttpStatus.CREATED);
+	        
+	    } catch (IllegalArgumentException e) {
+	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	    } catch (Exception e) {
+	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
 	}
 
 		
