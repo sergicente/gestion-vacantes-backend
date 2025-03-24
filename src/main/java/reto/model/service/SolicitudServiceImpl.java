@@ -66,7 +66,7 @@ public class SolicitudServiceImpl implements SolicitudService{
 		}
 	}
 		
-	public Solicitud enviarSolicitud(Solicitud solicitud) {
+	/*public Solicitud enviarSolicitud(Solicitud solicitud) {
 	    // Usa las entidades ya validadas en el controlador
 	    Vacante vacante = solicitud.getVacante();
 	    Usuario usuario = solicitud.getUsuario();
@@ -81,7 +81,7 @@ public class SolicitudServiceImpl implements SolicitudService{
 
 	    solicitud.setEstado(0);
 	    return srepo.save(solicitud);
-	}
+	}*/
 
 	public List <Solicitud> findBySolicitudPorUsuario (String email) {
 		return srepo.findByUsuarioEmail(email);
@@ -104,5 +104,4 @@ public class SolicitudServiceImpl implements SolicitudService{
 	    }
 	    
 }
-
 

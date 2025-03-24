@@ -20,5 +20,6 @@ public interface VacanteRepository extends JpaRepository<Vacante, Integer>{
     @Query("SELECT s FROM Solicitud s WHERE s.vacante.id = :idVacante")
     List<Solicitud> findSolicitudesByVacanteId(@Param("idVacante") Integer idVacante);
     void deleteByEmpresa_IdEmpresa(Integer idEmpresa);
+	List<Vacante> findByEmpresa_IdEmpresa(Integer idEmpresa);
 
 }

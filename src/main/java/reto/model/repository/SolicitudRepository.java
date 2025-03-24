@@ -14,5 +14,6 @@ public interface SolicitudRepository extends JpaRepository<Solicitud, Integer>{
 	 @Query("SELECT s FROM Solicitud s WHERE s.usuario.email = :email")
 	    List<Solicitud> findByUsuarioEmail(@Param("email") String email);
     List<Solicitud> findByVacante(Vacante vacante);
+	void deleteByVacante_IdVacante(int idVacante);
 
 }
