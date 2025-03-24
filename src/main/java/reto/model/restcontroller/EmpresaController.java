@@ -34,6 +34,12 @@ public class EmpresaController {
 				.collect(Collectors.toList());
 		return new ResponseEntity<>(empresasDto, HttpStatus.OK);
 	}
+	
+	@GetMapping("/con-vacantes")
+	public ResponseEntity<List<EmpresaDto>> obtenerEmpresasConVacantes() {
+	    List<EmpresaDto> empresasDto = eservice.obtenerEmpresasConNumeroVacantes();
+	    return new ResponseEntity<>(empresasDto, HttpStatus.OK);
+	}
 
 	// Obtener una empresa por su ID
 	@GetMapping("/{id}")

@@ -13,8 +13,12 @@ public class EmpresaDto implements Serializable {
     private String direccionFiscal;
     private String pais;
     private String email;
-    private String nombre;
-	private String apellidos;
+//    private String nombre;
+//	private String apellidos;
+	private long numeroVacantes; // Nuevo campo
+
+	
+	
 	public int getIdEmpresa() {
 		return idEmpresa;
 	}
@@ -51,18 +55,24 @@ public class EmpresaDto implements Serializable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getNombre() {
-		return nombre;
+	public long getNumeroVacantes() {
+		return numeroVacantes;
 	}
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
+	public void setNumeroVacantes(long numeroVacantes) {
+		this.numeroVacantes = numeroVacantes;
 	}
-	public String getApellidos() {
-		return apellidos;
-	}
-	public void setApellidos(String apellidos) {
-		this.apellidos = apellidos;
-	}
+//	public String getNombre() {
+//		return nombre;
+//	}
+//	public void setNombre(String nombre) {
+//		this.nombre = nombre;
+//	}
+//	public String getApellidos() {
+//		return apellidos;
+//	}
+//	public void setApellidos(String apellidos) {
+//		this.apellidos = apellidos;
+//	}
 	@Override
 	public int hashCode() {
 		return Objects.hash(cif, idEmpresa);
@@ -76,21 +86,36 @@ public class EmpresaDto implements Serializable {
 		EmpresaDto other = (EmpresaDto) obj;
 		return Objects.equals(cif, other.cif) && idEmpresa == other.idEmpresa;
 	}
+//	public EmpresaDto(int idEmpresa, String cif, String nombreEmpresa, String direccionFiscal, String pais,
+//			String email, String nombre, String apellidos) {
+//		super();
+//		this.idEmpresa = idEmpresa;
+//		this.cif = cif;
+//		this.nombreEmpresa = nombreEmpresa;
+//		this.direccionFiscal = direccionFiscal;
+//		this.pais = pais;
+//		this.email = email;
+//		this.nombre = nombre;
+//		this.apellidos = apellidos;
+//	}
+	
+	// NUEVO CONSTRUCTOR para la query (sin nombre y apellidos, pero con numeroVacantes)
 	public EmpresaDto(int idEmpresa, String cif, String nombreEmpresa, String direccionFiscal, String pais,
-			String email, String nombre, String apellidos) {
-		super();
+			String email, long numeroVacantes) {
 		this.idEmpresa = idEmpresa;
 		this.cif = cif;
 		this.nombreEmpresa = nombreEmpresa;
 		this.direccionFiscal = direccionFiscal;
 		this.pais = pais;
 		this.email = email;
-		this.nombre = nombre;
-		this.apellidos = apellidos;
+		this.setNumeroVacantes(numeroVacantes);
 	}
+	
+	
 	public EmpresaDto() {
 		super();
 	}
+
 	
 }
 
