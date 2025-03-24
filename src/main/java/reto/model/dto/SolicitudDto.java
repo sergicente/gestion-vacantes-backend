@@ -7,7 +7,10 @@ import java.util.Objects;
 
 public class SolicitudDto implements Serializable{
 	
-    private int idSolicitud;
+    
+	private static final long serialVersionUID = 1L;
+	
+	private int idSolicitud;
     private LocalDate fecha;
     private String archivo;
     private String comentarios;
@@ -15,6 +18,9 @@ public class SolicitudDto implements Serializable{
     private String curriculum;
     private int idVacante;
     private String email;
+    
+    
+    
 	public int getIdSolicitud() {
 		return idSolicitud;
 	}

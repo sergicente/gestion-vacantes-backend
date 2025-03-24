@@ -16,7 +16,7 @@ import reto.model.entity.Empresa;
 public class RetoConfiguration {
 
     @Bean
-    public ModelMapper getModelMapper() {
+    ModelMapper getModelMapper() {
         ModelMapper modelMapper = new ModelMapper();
 
         modelMapper.createTypeMap(Vacante.class, VacanteDto.class);

@@ -2,19 +2,17 @@ package reto.model.restcontroller;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import reto.model.dto.EmpresaDto;
 import reto.model.dto.VacanteDto;
 import reto.model.entity.Empresa;
 import reto.model.entity.Vacante;
 import reto.model.service.EmpresaService;
-import reto.model.service.VacanteService;
+
 
 @RestController
 @RequestMapping("/api/empresas")

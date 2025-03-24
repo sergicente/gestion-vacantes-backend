@@ -7,6 +7,9 @@ import java.util.Objects;
 
 public class EmpresaDto implements Serializable {
     
+	
+	private static final long serialVersionUID = 1L;
+	
 	private int idEmpresa;
 	private String cif;
     private String nombreEmpresa;

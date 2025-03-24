@@ -2,6 +2,7 @@ package reto.model.entity;
 
 import org.antlr.v4.runtime.misc.NotNull;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

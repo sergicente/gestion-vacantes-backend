@@ -6,7 +6,10 @@ import java.util.Objects;
 
 
 public class VacanteDto implements Serializable {
-    private int idVacante;
+    
+	private static final long serialVersionUID = 1L;
+	
+	private int idVacante;
     private String nombre;
     private String descripcion;
     private LocalDate fecha;
