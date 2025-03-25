@@ -1,6 +1,8 @@
 package reto.model.service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,7 @@ public class EmpresaServiceImpl implements EmpresaService {
 
 	@Autowired
 	private UsuarioRepository usuarioRepo;
-	
+
 	@Autowired
 	private SolicitudRepository srepo;
 
@@ -42,51 +44,61 @@ public class EmpresaServiceImpl implements EmpresaService {
 
 	@Override
 	public Empresa insertar(Empresa empresa) {
-		// Verificar que el usuario existe antes de guardar
-		Usuario usuario = usuarioRepo.findById(empresa.getEmailEmpresa()).orElseThrow(
-				() -> new RuntimeException("El usuario con email " + empresa.getEmailEmpresa() + " no existe"));
+	    // Verificar si el usuario ya existe
+	    Optional<Usuario> optionalUsuario = usuarioRepo.findById(empresa.getEmailEmpresa());
+	    Usuario usuario;
 
-		empresa.setUsuario(usuario); // o empresa.setEmailUsuario(usuario);
-		return erepo.save(empresa);
+	    if (optionalUsuario.isPresent()) {
+	        usuario = optionalUsuario.get();
+	    } else {
+	        // Crear nuevo usuario con datos básicos
+	        usuario = new Usuario();
+	        usuario.setEmail(empresa.getEmailEmpresa());
+	        usuario.setNombre(empresa.getNombreEmpresa()); // O nombreEmpresa si no hay nombre del responsable
+
+	        usuario.setPassword("1234"); // Contraseña fija por defecto (sin encoder)
+	        usuario.setEnabled(1);
+	        usuario.setFechaRegistro(LocalDate.now());
+	        usuario.setRol("EMPRESA");
+
+	        usuario = usuarioRepo.save(usuario);
+	    }
+
+
+	    return erepo.save(empresa);
 	}
+
 
 	@Override
-	public Empresa modificar(Empresa entidad) {
-		return erepo.findById(entidad.getIdEmpresa()).map(empresaExistente -> {
-			if (entidad.getNombreEmpresa() != null) {
-				empresaExistente.setNombreEmpresa(entidad.getNombreEmpresa());
-			}
-			if (entidad.getDireccionFiscal() != null) {
-				empresaExistente.setDireccionFiscal(entidad.getDireccionFiscal());
-			}
-			if (entidad.getPais() != null) {
-				empresaExistente.setPais(entidad.getPais());
-			}
-			if (entidad.getEmailEmpresa() != null) {
-				empresaExistente.setEmailEmpresa(entidad.getEmailEmpresa());
-			}
+	public Empresa modificar(Empresa empresa) {
+	    return erepo.findById(empresa.getIdEmpresa()).map(empresaExistente -> {
+	        // Actualizar solo los campos permitidos
+	        empresaExistente.setCif(empresa.getCif());
+	        empresaExistente.setNombreEmpresa(empresa.getNombreEmpresa());
+	        empresaExistente.setDireccionFiscal(empresa.getDireccionFiscal());
+	        empresaExistente.setPais(empresa.getPais());
+	        empresaExistente.setVacantes(empresa.getVacantes());
 
-			return erepo.save(empresaExistente);
-		}).orElseThrow();
+	        if (empresa.getVacantes() != null) {
+	            empresaExistente.setVacantes(empresa.getVacantes());
+	        }
+
+	        return erepo.save(empresaExistente);
+	    }).orElseThrow(() -> new RuntimeException("Empresa no encontrada con ID: " + empresa.getIdEmpresa()));
 	}
-
 	@Override
 	@Transactional
 	public int borrar(Integer idEmpresa) {
 		try {
 			if (erepo.existsById(idEmpresa)) {
-				// Paso 1: obtener todas las vacantes de la empresa
 				List<Vacante> vacantes = vrepo.findByEmpresa_IdEmpresa(idEmpresa);
 
-				// Paso 2: borrar solicitudes por cada vacante
 				for (Vacante v : vacantes) {
 					srepo.deleteByVacante_IdVacante(v.getIdVacante());
 				}
 
-				// Paso 3: borrar vacantes
 				vrepo.deleteByEmpresa_IdEmpresa(idEmpresa);
 
-				// Paso 4: borrar empresa
 				erepo.deleteById(idEmpresa);
 
 				return 1;
@@ -98,7 +110,6 @@ public class EmpresaServiceImpl implements EmpresaService {
 			return -1;
 		}
 	}
-
 
 	@Override
 	public List<Vacante> buscarVacantesPorEmpresa(Empresa empresa) {

@@ -28,7 +28,7 @@ public class Empresa {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int idEmpresa;
+	private Integer idEmpresa;
 	@NotNull
 	private String cif;
 	private String nombreEmpresa;
@@ -37,11 +37,7 @@ public class Empresa {
 	@Column(name = "email") // Nombre diferente en la base de datos
 	private String emailEmpresa;
 
-	@ManyToOne
-	@JoinColumn(name = "email_usuario", referencedColumnName = "email") // Relación con Usuario
-	private Usuario usuario;
-
-	@OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL)
 	private List<Vacante> vacantes;
 
 }

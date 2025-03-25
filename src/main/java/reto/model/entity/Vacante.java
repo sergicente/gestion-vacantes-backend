@@ -47,10 +47,6 @@ public class Vacante {
     @ManyToOne
     @JoinColumn(name = "id_empresa")
     private Empresa empresa;
-
-    public enum Estatus {
-        CREADA, CUBIERTA, CANCELADA
-    }
     
     @OneToMany(mappedBy = "vacante", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Solicitud> solicitudes;

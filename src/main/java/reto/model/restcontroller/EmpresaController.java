@@ -17,7 +17,6 @@ import reto.model.service.EmpresaService;
 import reto.model.service.UsuarioService;
 import reto.model.service.VacanteService;
 
-
 @RestController
 @RequestMapping("/api/empresas")
 @CrossOrigin(origins = "*")
@@ -38,11 +37,11 @@ public class EmpresaController {
 				.collect(Collectors.toList());
 		return new ResponseEntity<>(empresasDto, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/con-vacantes")
 	public ResponseEntity<List<EmpresaDto>> obtenerEmpresasConVacantes() {
-	    List<EmpresaDto> empresasDto = eservice.obtenerEmpresasConNumeroVacantes();
-	    return new ResponseEntity<>(empresasDto, HttpStatus.OK);
+		List<EmpresaDto> empresasDto = eservice.obtenerEmpresasConNumeroVacantes();
+		return new ResponseEntity<>(empresasDto, HttpStatus.OK);
 	}
 
 	// Obtener una empresa por su ID
@@ -61,14 +60,12 @@ public class EmpresaController {
 		try {
 			Empresa empresa = modelMapper.map(empresaDto, Empresa.class);
 
-			// Asignar el usuario existente a la empresa
-			Usuario usuario = urepo.findById(empresaDto.getEmail()).orElseThrow(
-					() -> new RuntimeException("Usuario no encontrado con email: " + empresaDto.getEmail()));
+			empresa.setIdEmpresa(null);
 
-			empresa.setUsuario(usuario);
 			empresa.setEmailEmpresa(empresaDto.getEmail());
 
 			Empresa nuevaEmpresa = eservice.insertar(empresa);
+
 			EmpresaDto respuesta = modelMapper.map(nuevaEmpresa, EmpresaDto.class);
 
 			return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
@@ -78,25 +75,28 @@ public class EmpresaController {
 		}
 	}
 
-	// Modificar los datos de una empresa
 	@PutMapping("/{id}")
-	public ResponseEntity<EmpresaDto> modificarEmpresa(@PathVariable Integer id, @RequestBody EmpresaDto empresaDto) {
-		Empresa empresaExistente = eservice.buscar(id);
-		if (empresaExistente == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	public ResponseEntity<?> modificarEmpresa(@PathVariable("id") Integer id, @RequestBody EmpresaDto empresaDto) {
+		try {
+			Empresa empresa = modelMapper.map(empresaDto, Empresa.class);
+			empresa.setIdEmpresa(id); // Este es el campo real en la entidad
+
+			empresa.setEmailEmpresa(empresaDto.getEmail());
+
+			Empresa empresaModificada = eservice.modificar(empresa);
+			EmpresaDto respuesta = modelMapper.map(empresaModificada, EmpresaDto.class);
+
+			return new ResponseEntity<>(respuesta, HttpStatus.OK);
+
+		} catch (Exception e) {
+			return new ResponseEntity<>("Error al modificar empresa: " + e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
-		Empresa empresa = modelMapper.map(empresaDto, Empresa.class);
-		empresa.setIdEmpresa(id);
-		Empresa empresaModificada = eservice.modificar(empresa);
-		EmpresaDto empresaDtoRespuesta = modelMapper.map(empresaModificada, EmpresaDto.class);
-		return new ResponseEntity<>(empresaDtoRespuesta, HttpStatus.OK);
 	}
 
 	// Eliminar una empresa
 	@DeleteMapping("/empresas/{id}")
 	public ResponseEntity<?> eliminarEmpresa(@PathVariable("id") Integer id) {
-		int resultado = eservice.borrar(id); // eserv = EmpresaService inyectado
-
+		int resultado = eservice.borrar(id); 
 		switch (resultado) {
 		case 1:
 			return ResponseEntity.ok().build(); // 200 OK
