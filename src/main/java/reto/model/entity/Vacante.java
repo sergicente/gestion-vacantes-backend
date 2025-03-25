@@ -1,9 +1,10 @@
 package reto.model.entity;
 
 import java.time.LocalDate;
-
+import reto.model.entity.Estatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
+
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

@@ -7,7 +7,7 @@ import reto.model.entity.Categoria;
 import reto.model.entity.Empresa;
 import reto.model.entity.Solicitud;
 import reto.model.entity.Vacante;
-import reto.model.entity.Vacante.Estatus;
+import reto.model.entity.Estatus;
 import reto.model.repository.VacanteRepository;
 @Service
 public class VacanteServiceImpl implements VacanteService{
@@ -67,7 +67,7 @@ public class VacanteServiceImpl implements VacanteService{
 	
 	}
 	public Vacante publicarVacante(Vacante vacante) {
-		vacante.setEstatus(Vacante.Estatus.CREADA);
+		vacante.setEstatus(Estatus.CREADA);
 		return vrepo.save(vacante);
 	}
 	
@@ -79,7 +79,7 @@ public class VacanteServiceImpl implements VacanteService{
     
     
     public void asignarVacante(Vacante vacante, Solicitud solicitud) {
-        vacante.setEstatus(Vacante.Estatus.CUBIERTA);
+        vacante.setEstatus(Estatus.CUBIERTA);
         solicitud.setEstado(1);
         vrepo.save(vacante);
     }
