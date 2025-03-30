@@ -18,8 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reto.model.dto.SolicitudDto;
 import reto.model.dto.VacanteDto;
+import reto.model.dto.VacanteInputDto;
 import reto.model.entity.Solicitud;
 import reto.model.entity.Vacante;
+import reto.model.entity.Categoria;
+import reto.model.entity.Empresa;
+import reto.model.entity.Estatus;
 import reto.model.service.SolicitudService;
 import reto.model.service.VacanteService;
 
@@ -47,11 +51,27 @@ public class VacanteController {
     public Vacante obtenerUno(@PathVariable int id) {
         return vservice.buscar(id);
     }
-    
 
     @PostMapping
-    public ResponseEntity<VacanteDto> crearVacante(@RequestBody VacanteDto vacanteDto) {
-        Vacante vacante = modelMapper.map(vacanteDto, Vacante.class);  // Convertir DTO a entidad
+    public ResponseEntity<VacanteDto> crearVacante(@RequestBody VacanteInputDto vacanteInputDto) {
+        
+    	Categoria categoria = new Categoria();
+    	categoria.setIdCategoria(vacanteInputDto.getIdCategoria());
+    	
+    	Empresa empresa = new Empresa();
+    	empresa.setIdEmpresa(vacanteInputDto.getIdEmpresa());
+    	
+    	Vacante vacante = new Vacante();
+    	vacante.setNombre(vacanteInputDto.getNombre());
+    	vacante.setDescripcion(vacanteInputDto.getDescripcion());
+    	vacante.setFecha(vacanteInputDto.getFecha());
+    	vacante.setSalario(vacanteInputDto.getSalario());
+    	vacante.setEstatus(Estatus.CREADA);
+    	vacante.setImagen(vacanteInputDto.getImagen());
+    	vacante.setDetalles(vacanteInputDto.getDetalles());
+    	vacante.setCategoria(categoria);
+    	vacante.setEmpresa(empresa);
+    	
         Vacante nuevaVacante = vservice.publicarVacante(vacante);
         VacanteDto vacanteDtoRespuesta = modelMapper.map(nuevaVacante, VacanteDto.class); // Convertir de vuelta a DTO
         return new ResponseEntity<>(vacanteDtoRespuesta, HttpStatus.CREATED);
