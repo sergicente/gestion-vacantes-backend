@@ -16,7 +16,6 @@ import reto.model.service.EmpresaService;
 
 @RestController
 @RequestMapping("/api/empresas")
-@CrossOrigin(origins = "*")
 public class EmpresaController {
 
 	@Autowired
