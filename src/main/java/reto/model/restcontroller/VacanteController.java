@@ -29,7 +29,6 @@ import reto.model.service.VacanteService;
 
 @RestController
 @RequestMapping("/api/vacantes")
-@CrossOrigin(origins = "*")
 public class VacanteController {
 	
 	@Autowired

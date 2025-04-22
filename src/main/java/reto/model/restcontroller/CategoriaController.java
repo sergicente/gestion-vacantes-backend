@@ -23,7 +23,6 @@ import reto.model.service.CategoriaService;
 
 @RestController
 @RequestMapping("/api/categorias")
-@CrossOrigin(origins = "*")
 public class CategoriaController {
 	
 	@Autowired

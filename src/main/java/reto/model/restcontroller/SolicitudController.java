@@ -25,7 +25,6 @@ import reto.model.service.SolicitudService;
 import reto.model.service.UsuarioService;
 import reto.model.service.VacanteService;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/solicitudes")
 public class SolicitudController {
