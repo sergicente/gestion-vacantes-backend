@@ -23,7 +23,7 @@ public class SolicitudDto implements Serializable{
     private String curriculum;
     private int idVacante;
     private String email;
-    
+    private String nombreVacante;
 
     
 }
