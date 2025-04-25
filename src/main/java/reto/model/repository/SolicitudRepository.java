@@ -11,8 +11,8 @@ import reto.model.entity.Vacante;
 
 public interface SolicitudRepository extends JpaRepository<Solicitud, Integer>{
 
-	 @Query("SELECT s FROM Solicitud s WHERE s.usuario.email = :email")
-	    List<Solicitud> findByUsuarioEmail(@Param("email") String email);
+	@Query("SELECT s FROM Solicitud s WHERE s.email = :email")
+	List<Solicitud> findByEmail(@Param("email") String email);
     List<Solicitud> findByVacante(Vacante vacante);
 
 }

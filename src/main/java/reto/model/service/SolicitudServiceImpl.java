@@ -69,9 +69,9 @@ public class SolicitudServiceImpl implements SolicitudService{
 	public Solicitud enviarSolicitud(Solicitud solicitud) {
 	    // Usa las entidades ya validadas en el controlador
 	    Vacante vacante = solicitud.getVacante();
-	    Usuario usuario = solicitud.getUsuario();
-
-	    if (vacante == null || usuario == null) {
+	    String email = solicitud.getEmail();
+	    
+	    if (vacante == null || email == null) {
 	        throw new IllegalArgumentException("Vacante o usuario no proporcionados");
 	    }
 
@@ -84,8 +84,8 @@ public class SolicitudServiceImpl implements SolicitudService{
 	}
 
 	public List <Solicitud> findBySolicitudPorUsuario (String email) {
-		return srepo.findByUsuarioEmail(email);
-	}
+		return srepo.findByEmail(email);
+		}
 	
 	public void cancelarSolicitud(int idSolicitud) {
 	    Solicitud solicitud = srepo.findById(idSolicitud)
