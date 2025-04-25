@@ -48,9 +48,15 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<UsuarioDto> crearUsuario(@RequestBody UsuarioDto usuarioDto) {
         Usuario usuario = modelMapper.map(usuarioDto, Usuario.class); 
-        Usuario nuevoUsuario = uservice.insertar(usuario); 
-        UsuarioDto usuarioDtoRespuesta = modelMapper.map(nuevoUsuario, UsuarioDto.class);  
-        return new ResponseEntity<>(usuarioDtoRespuesta, HttpStatus.CREATED); 
+    	if(uservice.buscar(usuario.getEmail()) != null) {
+    		return new ResponseEntity<>(HttpStatus.CONFLICT);
+    	}else {
+            Usuario nuevoUsuario = uservice.insertar(usuario); 
+            UsuarioDto usuarioDtoRespuesta = modelMapper.map(nuevoUsuario, UsuarioDto.class);  
+            return new ResponseEntity<>(usuarioDtoRespuesta, HttpStatus.CREATED);   		
+    	}
+
+
     }
 
     // Eliminar un usuario

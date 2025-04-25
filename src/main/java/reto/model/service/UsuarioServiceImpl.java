@@ -28,24 +28,24 @@ public class UsuarioServiceImpl implements UsuarioService{
 
 	@Override
 	public Usuario insertar(Usuario entidad) {
-	   String password = generarPassword();
-	   
-	   entidad.setPassword(password);
+//	   String password = generarPassword();
+//	   
+//	   entidad.setPassword(password);
 	   return urepo.save(entidad);
 	}
 
-	private String generarPassword() {
-		    String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%";
-		    SecureRandom random = new SecureRandom();
-		    StringBuilder password = new StringBuilder();
-
-		    for (int i = 0; i < 10; i++) { 
-		        int index = random.nextInt(caracteres.length());
-		        password.append(caracteres.charAt(index));
-		    }
-		    
-		    return password.toString();
-		}
+//	private String generarPassword() {
+//		    String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%";
+//		    SecureRandom random = new SecureRandom();
+//		    StringBuilder password = new StringBuilder();
+//
+//		    for (int i = 0; i < 10; i++) { 
+//		        int index = random.nextInt(caracteres.length());
+//		        password.append(caracteres.charAt(index));
+//		    }
+//		    
+//		    return password.toString();
+//		}
 	
 
 	@Override
