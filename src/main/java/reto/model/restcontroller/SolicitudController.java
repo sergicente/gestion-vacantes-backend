@@ -141,14 +141,14 @@ public class SolicitudController {
 	    // Guardar archivo en disco
 	 // Guardar archivo en disco
 	    String nombreArchivo = archivo.getOriginalFilename();
-	    Path rutaArchivo = Paths.get(System.getProperty("user.dir"), "uploads", nombreArchivo); // ✅ ruta segura
+	    Path rutaArchivo = Paths.get(System.getProperty("user.dir"), "uploads", nombreArchivo);
 
 	    try {
 	        Files.createDirectories(rutaArchivo.getParent()); 
 	        archivo.transferTo(rutaArchivo.toFile()); 
-	        System.out.println("✅ Archivo guardado en: " + rutaArchivo.toAbsolutePath());
+	        System.out.println("Archivo guardado en: " + rutaArchivo.toAbsolutePath());
 	    } catch (IOException e) {
-	        System.err.println("❌ ERROR AL GUARDAR ARCHIVO");
+	        System.err.println("ERROR AL GUARDAR ARCHIVO");
 	        e.printStackTrace();
 	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
@@ -216,7 +216,7 @@ public class SolicitudController {
 	        }
 
 	        return ResponseEntity.ok()
-	            .contentType(MediaType.APPLICATION_PDF) // 👈 Esto es la clave
+	            .contentType(MediaType.APPLICATION_PDF)
 	            .body(archivo);
 	    } catch (Exception e) {
 	        return ResponseEntity.internalServerError().build();
