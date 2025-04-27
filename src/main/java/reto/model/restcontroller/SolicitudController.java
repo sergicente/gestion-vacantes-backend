@@ -77,53 +77,6 @@ public class SolicitudController {
 		return new ResponseEntity<>(solicitudDto, HttpStatus.OK);
 	}
 
-//	@PostMapping("/enviarSolicitud")
-//	public ResponseEntity<SolicitudDto> crearSolicitud(@RequestBody SolicitudDto solicitudDto) {
-//	    // Validar campos requeridos
-//	    if (solicitudDto.getEmail() == null || solicitudDto.getIdVacante() == 0) {
-//	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//	    }
-//
-//	    // Obtener Usuario y Vacante
-//	    Usuario usuario = uservice.buscar(solicitudDto.getEmail());
-//	    Vacante vacante = vservice.buscar(solicitudDto.getIdVacante());
-//
-//	    if (usuario == null || vacante == null) {
-//	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//	    }
-//
-//	    // Mapear DTO a Entidad (excepto relaciones)
-//	    Solicitud nuevaSolicitud = new Solicitud();
-//	    nuevaSolicitud.setFecha(LocalDate.now());
-//	    nuevaSolicitud.setArchivo(solicitudDto.getArchivo());
-//	    nuevaSolicitud.setComentarios(solicitudDto.getComentarios());
-//	    nuevaSolicitud.setCurriculum(solicitudDto.getCurriculum());
-//	    nuevaSolicitud.setUsuario(usuario);
-//	    nuevaSolicitud.setVacante(vacante);
-//
-//	    try {
-//	        Solicitud solicitudGuardada = sservice.enviarSolicitud(nuevaSolicitud);
-//	        
-//	        // Mapear entidad a DTO incluyendo relaciones
-//	        SolicitudDto respuestaDto = new SolicitudDto();
-//	        respuestaDto.setIdSolicitud(solicitudGuardada.getIdSolicitud());
-//	        respuestaDto.setFecha(solicitudGuardada.getFecha());
-//	        respuestaDto.setArchivo(solicitudGuardada.getArchivo());
-//	        respuestaDto.setComentarios(solicitudGuardada.getComentarios());
-//	        respuestaDto.setCurriculum(solicitudGuardada.getCurriculum());
-//	        respuestaDto.setEstado(solicitudGuardada.getEstado());
-//	        respuestaDto.setIdVacante(solicitudGuardada.getVacante().getIdVacante());
-//	        respuestaDto.setEmail(solicitudGuardada.getUsuario().getEmail());
-//	        
-//	        return new ResponseEntity<>(respuestaDto, HttpStatus.CREATED);
-//	        
-//	    } catch (IllegalArgumentException e) {
-//	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//	    } catch (Exception e) {
-//	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//	    }
-//	}
-
 	@PostMapping("/enviarSolicitud")
 	public ResponseEntity<SolicitudDto> crearSolicitudConArchivo(
 	    @RequestParam("email") String email,
@@ -139,7 +92,6 @@ public class SolicitudController {
 	    }
 
 	    // Guardar archivo en disco
-	 // Guardar archivo en disco
 	    String nombreArchivo = archivo.getOriginalFilename();
 	    Path rutaArchivo = Paths.get(System.getProperty("user.dir"), "uploads", nombreArchivo);
 
@@ -159,7 +111,7 @@ public class SolicitudController {
 	    nuevaSolicitud.setArchivo(nombreArchivo); // nombre del archivo guardado
 	    nuevaSolicitud.setCurriculum(nombreArchivo); // si usas otro campo
 	    nuevaSolicitud.setComentarios(comentarios);
-	    nuevaSolicitud.setEmail(usuario.getEmail());
+	    nuevaSolicitud.setUsuario(usuario);
 	    nuevaSolicitud.setVacante(vacante);
 
 	    try {
@@ -173,11 +125,11 @@ public class SolicitudController {
 	        respuestaDto.setCurriculum(solicitudGuardada.getCurriculum());
 	        respuestaDto.setEstado(solicitudGuardada.getEstado());
 	        respuestaDto.setIdVacante(solicitudGuardada.getVacante().getIdVacante());
-	        respuestaDto.setEmail(solicitudGuardada.getEmail());
+	        respuestaDto.setEmail(solicitudGuardada.getUsuario().getEmail());
 	        return new ResponseEntity<>(respuestaDto, HttpStatus.CREATED);
 
 	    } catch (Exception e) {
-	        System.err.println("⚠️ ERROR AL GUARDAR LA SOLICITUD");
+	        System.err.println("ERROR AL GUARDAR LA SOLICITUD");
 	        e.printStackTrace();
 	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
@@ -202,6 +154,12 @@ public class SolicitudController {
 		List<SolicitudDto> solicitudesDto = solicitudes.stream()
 				.map(solicitud -> modelMapper.map(solicitud, SolicitudDto.class)).collect(Collectors.toList());
 		return new ResponseEntity<>(solicitudesDto, HttpStatus.OK);
+	}
+	
+	// Endpoint para ver si ya existe una solicitud
+	@GetMapping("/verificar/{idUsuario}/{vacanteId}")
+	public Boolean verificarSolicitudExistente(@PathVariable String idUsuario, @PathVariable Integer vacanteId) {
+		return sservice.buscarSolicitudExistente(idUsuario, vacanteId);
 	}
 
 	
