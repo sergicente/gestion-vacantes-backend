@@ -2,6 +2,7 @@ package reto.model.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,111 +11,105 @@ import reto.model.dto.EmpresaDto;
 import reto.model.entity.Empresa;
 import reto.model.entity.EmpresaYPassword;
 import reto.model.entity.Usuario;
+import reto.model.entity.Solicitud;
 import reto.model.entity.Vacante;
 import reto.model.repository.EmpresaRepository;
+import reto.model.repository.SolicitudRepository;
 import reto.model.repository.UsuarioRepository;
+
 @Service
-public class EmpresaServiceImpl implements EmpresaService{
-	
-	@Autowired
-	private EmpresaRepository erepo;
-	@Autowired
-	private UsuarioRepository urepo;
+public class EmpresaServiceImpl implements EmpresaService {
 
-	@Override
-	public Empresa buscar(Integer clave) {
-		return erepo.findById(clave).orElse(null);
-	}
+    @Autowired
+    private EmpresaRepository erepo;
+    @Autowired
+    private UsuarioRepository urepo;
+    @Autowired
+    private SolicitudRepository srepo;
 
-	@Override
-	public List<Empresa> buscarTodos() {
-		return erepo.findAll();
-	}
+    @Override
+    public Empresa buscar(Integer clave) {
+        return erepo.findById(clave).orElse(null);
+    }
 
-	@Override
-	public Empresa insertar(Empresa entidad) {
-	    return erepo.save(entidad);
-	}
+    @Override
+    public List<Empresa> buscarTodos() {
+        return erepo.findAll();
+    }
 
-	@Override
-	public Empresa modificar(Empresa entidad) {
-	    return erepo.findById(entidad.getIdEmpresa()).map(empresaExistente -> {
-	        if (entidad.getNombreEmpresa() != null) {
-	            empresaExistente.setNombreEmpresa(entidad.getNombreEmpresa());
-	        }
-	        if (entidad.getDireccionFiscal() != null) {
-	            empresaExistente.setDireccionFiscal(entidad.getDireccionFiscal());
-	        }
-	        if (entidad.getPais() != null) {
-	            empresaExistente.setPais(entidad.getPais());
-	        }
-	        if (entidad.getEmailEmpresa() != null) {
-	            empresaExistente.setEmailEmpresa(entidad.getEmailEmpresa());
-	        }
+    @Override
+    public Empresa insertar(Empresa entidad) {
+        return erepo.save(entidad);
+    }
 
-	        return erepo.save(empresaExistente);
-	    }).orElseThrow();
-	}
+    @Override
+    public Empresa modificar(Empresa entidad) {
+        return erepo.findById(entidad.getIdEmpresa()).map(empresaExistente -> {
+            if (entidad.getNombreEmpresa() != null) {
+                empresaExistente.setNombreEmpresa(entidad.getNombreEmpresa());
+            }
+            if (entidad.getDireccionFiscal() != null) {
+                empresaExistente.setDireccionFiscal(entidad.getDireccionFiscal());
+            }
+            if (entidad.getPais() != null) {
+                empresaExistente.setPais(entidad.getPais());
+            }
+            if (entidad.getEmailEmpresa() != null) {
+                empresaExistente.setEmailEmpresa(entidad.getEmailEmpresa());
+            }
 
-	@Override
-	public int borrar(Integer clave) {
-		try {
-			if(erepo.existsById(clave)) {
-				erepo.deleteById(clave);
-				return 1;
-			}else {
-				return 0;
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-			return -1;
-		}
-	}
+            return erepo.save(empresaExistente);
+        }).orElseThrow();
+    }
 
-	@Override
-	public List<Vacante> buscarVacantesPorEmpresa(Empresa empresa) {
-		// TODO Auto-generated method stub
-	     return erepo.findVacantesByEmpresa(empresa);
-	}
+    @Override
+    public int borrar(Integer clave) {
+        try {
+            if (erepo.existsById(clave)) {
+                erepo.deleteById(clave);
+                return 1;
+            } else {
+                return 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
 
-	@Override
-	public List<EmpresaDto> obtenerEmpresasConNumeroVacantes() {
-		return erepo.obtenerEmpresasConNumeroVacantes();
-	}
+    @Override
+    public List<Vacante> buscarVacantesPorEmpresa(Empresa empresa) {
+        return erepo.findVacantesByEmpresa(empresa);
+    }
 
-	public EmpresaYPassword insertarConUsuario(Empresa empresa, Usuario usuario) {
-	    // Guardamos primero el usuario
-	    usuario.setRol("EMPRESA");
+    @Override
+    public List<EmpresaDto> obtenerEmpresasConNumeroVacantes() {
+        return erepo.obtenerEmpresasConNumeroVacantes();
+    }
 
-	    // Generamos la contraseña aleatoria para el usuario
-	    String password = generarPasswordAleatoria(10);
-	    usuario.setPassword(password); // Asignamos la contraseña generada
-	    usuario.setEnabled(1); // Habilitamos al usuario
-	    usuario.setFechaRegistro(LocalDate.now()); // Asignamos la fecha de registro
+    @Override
+    public EmpresaYPassword insertarConUsuario(Empresa empresa, Usuario usuario) {
+        usuario.setRol("EMPRESA");
+        String password = generarPasswordAleatoria(10);
+        usuario.setPassword(password);
+        usuario.setEnabled(1);
+        usuario.setFechaRegistro(LocalDate.now());
 
-	    // Guardamos el usuario en la base de datos
-	    urepo.save(usuario);
+        urepo.save(usuario);
+        empresa.setEmailEmpresa(usuario.getEmail());
 
-	    // Ahora guardamos la empresa
-	    // Aseguramos que la empresa tenga el email del usuario asociado
-	    empresa.setEmailEmpresa(usuario.getEmail()); // Vinculamos el email del usuario con la empresa
+        Empresa nuevaEmpresa = erepo.save(empresa);
 
-	    // Guardamos la empresa en la base de datos
-	    Empresa nuevaEmpresa = erepo.save(empresa);
+        return new EmpresaYPassword(nuevaEmpresa, password);
+    }
 
-	    // Devolvemos la empresa y la contraseña generada
-	    return new EmpresaYPassword(nuevaEmpresa, password);
-	}
-
-
-	// Método para generar una contraseña aleatoria
-	public String generarPasswordAleatoria(int longitud) {
-	    final String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
-	    StringBuilder password = new StringBuilder();
-	    for (int i = 0; i < longitud; i++) {
-	        int randomIndex = (int) (Math.random() * caracteres.length());
-	        password.append(caracteres.charAt(randomIndex));
-	    }
-	    return password.toString();
-	}
+    public String generarPasswordAleatoria(int longitud) {
+        final String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+        StringBuilder password = new StringBuilder();
+        for (int i = 0; i < longitud; i++) {
+            int randomIndex = (int) (Math.random() * caracteres.length());
+            password.append(caracteres.charAt(randomIndex));
+        }
+        return password.toString();
+    }
 }

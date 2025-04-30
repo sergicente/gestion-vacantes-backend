@@ -12,13 +12,14 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "Solicitudes")
 public class Solicitud {
-	
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idSolicitud;
@@ -36,5 +37,5 @@ public class Solicitud {
     @ManyToOne
     @JoinColumn(name = "email")
     private Usuario usuario;
-//    private String email;
+
 }

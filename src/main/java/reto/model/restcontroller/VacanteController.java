@@ -7,16 +7,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import reto.model.dto.SolicitudDto;
 import reto.model.dto.VacanteDto;
 import reto.model.dto.VacanteInputDto;
@@ -31,23 +23,20 @@ import reto.model.service.VacanteService;
 @RestController
 @RequestMapping("/api/vacantes")
 public class VacanteController {
-	
-	@Autowired
-	private VacanteService vservice;
-	@Autowired
-	private SolicitudService sservice;
-	  @Autowired
-	private ModelMapper modelMapper;
 
-	
+    @Autowired
+    private VacanteService vservice;
+    @Autowired
+    private SolicitudService sservice;
+    @Autowired
+    private ModelMapper modelMapper;
+
     // Devuelve todas las vacantes
     @GetMapping
     public List<Vacante> obtenerTodos() {
         return vservice.buscarTodos();
     }
-    
-    
-    
+
     @GetMapping("/creadas")
     public List<Vacante> obtenerTodasLasVacantesCreadas() {
         List<Vacante> vacantes = vservice.buscarTodos();
@@ -70,26 +59,25 @@ public class VacanteController {
 
     @PostMapping
     public ResponseEntity<VacanteDto> crearVacante(@RequestBody VacanteInputDto vacanteInputDto) {
-        
-    	Categoria categoria = new Categoria();
-    	categoria.setIdCategoria(vacanteInputDto.getIdCategoria());
-    	
-    	Empresa empresa = new Empresa();
-    	empresa.setIdEmpresa(vacanteInputDto.getIdEmpresa());
-    	
-    	Vacante vacante = new Vacante();
-    	vacante.setNombre(vacanteInputDto.getNombre());
-    	vacante.setDescripcion(vacanteInputDto.getDescripcion());
-    	vacante.setFecha(vacanteInputDto.getFecha());
-    	vacante.setSalario(vacanteInputDto.getSalario());
-    	vacante.setEstatus(Estatus.CREADA);
-    	vacante.setImagen(vacanteInputDto.getImagen());
-    	vacante.setDetalles(vacanteInputDto.getDetalles());
-    	vacante.setCategoria(categoria);
-    	vacante.setEmpresa(empresa);
-    	
+        Categoria categoria = new Categoria();
+        categoria.setIdCategoria(vacanteInputDto.getIdCategoria());
+
+        Empresa empresa = new Empresa();
+        empresa.setIdEmpresa(vacanteInputDto.getIdEmpresa());
+
+        Vacante vacante = new Vacante();
+        vacante.setNombre(vacanteInputDto.getNombre());
+        vacante.setDescripcion(vacanteInputDto.getDescripcion());
+        vacante.setFecha(vacanteInputDto.getFecha());
+        vacante.setSalario(vacanteInputDto.getSalario());
+        vacante.setEstatus(Estatus.CREADA);
+        vacante.setImagen(vacanteInputDto.getImagen());
+        vacante.setDetalles(vacanteInputDto.getDetalles());
+        vacante.setCategoria(categoria);
+        vacante.setEmpresa(empresa);
+
         Vacante nuevaVacante = vservice.publicarVacante(vacante);
-        VacanteDto vacanteDtoRespuesta = modelMapper.map(nuevaVacante, VacanteDto.class); // Convertir de vuelta a DTO
+        VacanteDto vacanteDtoRespuesta = modelMapper.map(nuevaVacante, VacanteDto.class);
         return new ResponseEntity<>(vacanteDtoRespuesta, HttpStatus.CREATED);
     }
 
@@ -102,22 +90,19 @@ public class VacanteController {
         return new ResponseEntity<>(vacantesDto, HttpStatus.OK);
     }
 
- 
     @PostMapping("/{vacanteId}/asignar/{solicitudId}")
     public ResponseEntity<Void> asignarVacanteACandidato(@PathVariable Integer vacanteId, @PathVariable Integer solicitudId) {
-        
-    	Vacante vacante = vservice.buscar(vacanteId);
-    	Solicitud solicitud = sservice.buscar(solicitudId);
+        Vacante vacante = vservice.buscar(vacanteId);
+        Solicitud solicitud = sservice.buscar(solicitudId);
 
-    	if (vacante != null && solicitud != null) {
-    		vservice.asignarVacante(vacante, solicitud);
-    	    solicitud.setEstado(1);
-    	    sservice.modificar(solicitud);
-    	}
-    	
+        if (vacante != null && solicitud != null) {
+            vservice.asignarVacante(vacante, solicitud);
+            solicitud.setEstado(1);
+            sservice.modificar(solicitud);
+        }
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
     @PutMapping("/{idVacante}")
     public ResponseEntity<VacanteDto> modificarVacante(@PathVariable Integer idVacante, @RequestBody VacanteDto vacanteDto) {
@@ -132,9 +117,9 @@ public class VacanteController {
         return new ResponseEntity<>(vacanteDtoRespuesta, HttpStatus.OK);
     }
 
-    // Cancelar vacante (cambiar el estado a CANCELADA)
-    @DeleteMapping("/{idVacante}")
-    public ResponseEntity<Void> cancelarVacante(@PathVariable Integer idVacante) {
+    // Cancelar vacante
+    @DeleteMapping("/borrar/{idVacante}")
+    public ResponseEntity<Void> borrarVacante(@PathVariable Integer idVacante) {
         Vacante vacante = vservice.buscar(idVacante);
         if (vacante == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -152,8 +137,8 @@ public class VacanteController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(solicitudesDto, HttpStatus.OK);
     }
-    
-    
+
+    // Buscar vacantes por nombre o descripción
     @GetMapping("/buscar")
     public ResponseEntity<List<VacanteDto>> buscarVacantes(@RequestParam String termino) {
         List<Vacante> vacantes = vservice.buscarPorNombreODescripcion(termino, termino);
@@ -162,6 +147,14 @@ public class VacanteController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(vacantesDto, HttpStatus.OK);
     }
+
+    // Obtener vacantes por empresa
+    @GetMapping("/empresa/{idEmpresa}")
+    public ResponseEntity<List<VacanteDto>> obtenerVacantesDeEmpresa(@PathVariable Integer idEmpresa) {
+        List<Vacante> vacantes = vservice.buscarPorEmpresa(idEmpresa);
+        List<VacanteDto> vacantesDto = vacantes.stream()
+                .map(vacante -> modelMapper.map(vacante, VacanteDto.class))
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(vacantesDto, HttpStatus.OK);
+    }
 }
-
-

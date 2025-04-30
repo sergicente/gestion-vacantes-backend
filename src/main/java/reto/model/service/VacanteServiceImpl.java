@@ -102,6 +102,12 @@ public class VacanteServiceImpl implements VacanteService{
 		// TODO Auto-generated method stub
 		   return vrepo.findSolicitudesByVacanteId(idVacante);
 	}
+	
+	@Override
+	public List<Vacante> buscarPorEmpresa(Integer idEmpresa) {
+	    return vrepo.findByEmpresaIdEmpresa(idEmpresa);
+	}
+
 
 	@Override
 	public List<Vacante> buscarPorNombreODescripcion(String nombre,

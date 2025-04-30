@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import reto.model.dto.AltaEmpresaResponseDto;
 import reto.model.dto.EmpresaConUsuarioDto;
 import reto.model.dto.EmpresaDto;
+import reto.model.dto.SolicitudDto;
 import reto.model.dto.VacanteDto;
 import reto.model.entity.Empresa;
 import reto.model.entity.EmpresaYPassword;
 import reto.model.entity.Usuario;
 import reto.model.entity.Vacante;
 import reto.model.service.EmpresaService;
-
 
 @RestController
 @RequestMapping("/api/empresas")
@@ -36,7 +36,7 @@ public class EmpresaController {
 				.collect(Collectors.toList());
 		return new ResponseEntity<>(empresasDto, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/con-vacantes")
 	public ResponseEntity<List<EmpresaDto>> obtenerEmpresasConVacantes() {
 	    List<EmpresaDto> empresasDto = eservice.obtenerEmpresasConNumeroVacantes();
@@ -88,52 +88,46 @@ public class EmpresaController {
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
-	// Obtener todas las vacantes de una empresa (si la empresa tiene vacantes
-	// asociadas)
+	// Obtener todas las vacantes de una empresa
 	@GetMapping("/{id}/vacantes")
 	public ResponseEntity<List<VacanteDto>> obtenerVacantesDeEmpresa(@PathVariable Integer id) {
 		Empresa empresa = eservice.buscar(id);
-
-		// Buscar las vacantes asociadas a esa empresa
 		List<Vacante> vacantes = eservice.buscarVacantesPorEmpresa(empresa);
-
-		// Convertir las vacantes a DTOs
 		List<VacanteDto> vacantesDto = vacantes.stream().map(vacante -> modelMapper.map(vacante, VacanteDto.class))
 				.collect(Collectors.toList());
-
-		// Retornar las vacantes como respuesta
 		return new ResponseEntity<>(vacantesDto, HttpStatus.OK);
 	}
-//metodo para obtener una contraseña aleatoriaa
-	 @PostMapping("/empresaUsuario")
-	    public ResponseEntity<AltaEmpresaResponseDto> crearEmpresaConUsuario(@RequestBody EmpresaConUsuarioDto empresaConUsuarioDto) {
-	        Empresa empresa = new Empresa();
-	        empresa.setCif(empresaConUsuarioDto.getCif());
-	        empresa.setNombreEmpresa(empresaConUsuarioDto.getNombreEmpresa());
-	        empresa.setDireccionFiscal(empresaConUsuarioDto.getDireccionFiscal());
-	        empresa.setPais(empresaConUsuarioDto.getPais());
-	        empresa.setEmailEmpresa(empresaConUsuarioDto.getEmail());
 
-	        Usuario usuario = new Usuario();
-	        usuario.setEmail(empresaConUsuarioDto.getEmail());
-	        usuario.setNombre(empresaConUsuarioDto.getNombreEmpresa());
-	        usuario.setApellidos("");
-	        
-	        EmpresaYPassword resultado = eservice.insertarConUsuario(empresa, usuario);
-	        
-	        EmpresaDto empresaDto = new EmpresaDto();
-	        empresaDto.setIdEmpresa(resultado.getEmpresa().getIdEmpresa());
-	        empresaDto.setCif(resultado.getEmpresa().getCif());
-	        empresaDto.setNombreEmpresa(resultado.getEmpresa().getNombreEmpresa());
-	        empresaDto.setDireccionFiscal(resultado.getEmpresa().getDireccionFiscal());
-	        empresaDto.setPais(resultado.getEmpresa().getPais());
-	        empresaDto.setEmail(resultado.getEmpresa().getEmailEmpresa());
+	// Crear empresa y usuario asociado con contraseña generada
+	@PostMapping("/empresaUsuario")
+	public ResponseEntity<AltaEmpresaResponseDto> crearEmpresaConUsuario(@RequestBody EmpresaConUsuarioDto empresaConUsuarioDto) {
+	    Empresa empresa = new Empresa();
+	    empresa.setCif(empresaConUsuarioDto.getCif());
+	    empresa.setNombreEmpresa(empresaConUsuarioDto.getNombreEmpresa());
+	    empresa.setDireccionFiscal(empresaConUsuarioDto.getDireccionFiscal());
+	    empresa.setPais(empresaConUsuarioDto.getPais());
+	    empresa.setEmailEmpresa(empresaConUsuarioDto.getEmail());
 
-	        AltaEmpresaResponseDto response = new AltaEmpresaResponseDto();
-	        response.setEmpresa(empresaDto);
-	        response.setUsuarioEmail(usuario.getEmail());
-	        response.setPasswordGenerada(resultado.getPassword());
+	    Usuario usuario = new Usuario();
+	    usuario.setEmail(empresaConUsuarioDto.getEmail());
+	    usuario.setNombre(empresaConUsuarioDto.getNombreEmpresa());
+	    usuario.setApellidos("");
 
-	        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-	    }
+	    EmpresaYPassword resultado = eservice.insertarConUsuario(empresa, usuario);
+
+	    EmpresaDto empresaDto = new EmpresaDto();
+	    empresaDto.setIdEmpresa(resultado.getEmpresa().getIdEmpresa());
+	    empresaDto.setCif(resultado.getEmpresa().getCif());
+	    empresaDto.setNombreEmpresa(resultado.getEmpresa().getNombreEmpresa());
+	    empresaDto.setDireccionFiscal(resultado.getEmpresa().getDireccionFiscal());
+	    empresaDto.setPais(resultado.getEmpresa().getPais());
+	    empresaDto.setEmail(resultado.getEmpresa().getEmailEmpresa());
+
+	    AltaEmpresaResponseDto response = new AltaEmpresaResponseDto();
+	    response.setEmpresa(empresaDto);
+	    response.setUsuarioEmail(usuario.getEmail());
+	    response.setPasswordGenerada(resultado.getPassword());
+
+	    return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
+}

@@ -17,6 +17,7 @@ public class UsuarioDto {
 	    private String password;
 	    private int enabled;
 	    private LocalDate fechaRegistro;
+	    private Integer idEmpresa;
 
 	    
 	}

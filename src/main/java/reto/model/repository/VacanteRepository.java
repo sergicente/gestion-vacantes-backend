@@ -10,8 +10,7 @@ import reto.model.entity.Estatus;
 import reto.model.entity.Solicitud;
 import reto.model.entity.Vacante;
 
-public interface VacanteRepository extends JpaRepository<Vacante, Integer>{
-
+public interface VacanteRepository extends JpaRepository<Vacante, Integer> {
 
     List<Vacante> findByEstatus(Estatus estatus);
     List<Vacante> findByCategoria(Categoria categoria);
@@ -19,5 +18,8 @@ public interface VacanteRepository extends JpaRepository<Vacante, Integer>{
     
     @Query("SELECT s FROM Solicitud s WHERE s.vacante.id = :idVacante")
     List<Solicitud> findSolicitudesByVacanteId(@Param("idVacante") Integer idVacante);
+
     List<Vacante> findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(String nombre, String descripcion);
+    List<Vacante> findByEmpresaIdEmpresa(Integer idEmpresa);
+
 }
