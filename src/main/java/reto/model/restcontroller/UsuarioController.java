@@ -1,20 +1,14 @@
 package reto.model.restcontroller;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-
+import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reto.model.dto.UsuarioDto;
 import reto.model.entity.Usuario;
 import reto.model.service.UsuarioService;
@@ -22,18 +16,20 @@ import reto.model.service.UsuarioService;
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
-	
-	@Autowired
-	private UsuarioService uservice;
-	 @Autowired
-	    private ModelMapper modelMapper;
-	
-    // Devuelve todas las empresas
+
+    @Autowired
+    private UsuarioService uservice;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    // Devuelve todos los usuarios
     @GetMapping
     public List<Usuario> obtenerTodos() {
         return uservice.buscarTodos();
     }
-    
+
+    // Devuelve un usuario por su email
     @GetMapping("/{email}")
     public ResponseEntity<UsuarioDto> obtenerUsuarioPorId(@PathVariable String email) {
         Usuario usuario = uservice.buscar(email);
@@ -48,18 +44,16 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<UsuarioDto> crearUsuario(@RequestBody UsuarioDto usuarioDto) {
         Usuario usuario = modelMapper.map(usuarioDto, Usuario.class); 
-    	if(uservice.buscar(usuario.getEmail()) != null) {
-    		return new ResponseEntity<>(HttpStatus.CONFLICT);
-    	}else {
+        if (uservice.buscar(usuario.getEmail()) != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);  // Ya existe un usuario con ese email
+        } else {
             Usuario nuevoUsuario = uservice.insertar(usuario); 
             UsuarioDto usuarioDtoRespuesta = modelMapper.map(nuevoUsuario, UsuarioDto.class);  
-            return new ResponseEntity<>(usuarioDtoRespuesta, HttpStatus.CREATED);   		
-    	}
-
-
+            return new ResponseEntity<>(usuarioDtoRespuesta, HttpStatus.CREATED);   
+        }
     }
 
-    // Eliminar un usuario
+    // Eliminar un usuario por email
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable String email) {
         Usuario usuario = uservice.buscar(email);
@@ -72,42 +66,59 @@ public class UsuarioController {
 
     // Modificar un usuario existente
     @PutMapping("/{email}")
-
     public ResponseEntity<UsuarioDto> modificarUsuario(@PathVariable String email, @RequestBody UsuarioDto usuarioDto) {
-        // Verificar si el objeto usuarioDto es null
         if (usuarioDto == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 Bad Request si el DTO es null
         }
 
-        // Verificar si los campos obligatorios están presentes en el DTO
         if (usuarioDto.getNombre() == null || usuarioDto.getApellidos() == null || usuarioDto.getRol() == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 Bad Request si falta algún campo esencial
         }
 
-        // Buscar el usuario en la base de datos
         Usuario usuarioExistente = uservice.buscar(email); 
         if (usuarioExistente == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);  // 404 si el usuario no existe
         }
 
-        // Mapear el DTO al modelo de entidad Usuario
         Usuario usuario = modelMapper.map(usuarioDto, Usuario.class); 
         usuario.setEmail(email);  // Asegurarse de que el email no se sobrescriba
 
-        // Modificar el usuario
         Usuario usuarioModificado = uservice.modificar(usuario);  
         if (usuarioModificado == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);  // 500 si la modificación falla
         }
 
-        // Mapear el usuario modificado a un DTO para la respuesta
         UsuarioDto usuarioDtoRespuesta = modelMapper.map(usuarioModificado, UsuarioDto.class);  
-
         return new ResponseEntity<>(usuarioDtoRespuesta, HttpStatus.OK);  // 200 OK si la modificación es exitosa
     }
 
+    // Deshabilitar usuario
+    @PutMapping("/deshabilitar/{email}")
+    public ResponseEntity<String> deshabilitarUsuario(@PathVariable String email) {
+        email = URLDecoder.decode(email, StandardCharsets.UTF_8); 
+        System.out.println("Email recibido: " + email); 
 
+        Optional<Usuario> usuarioOpt = uservice.buscarUsuarioPorEmail(email); 
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            usuario.setEnabled(0);  // Deshabilitar usuario
+            uservice.actualizarUsuario(usuario);  // Guardar cambios
+            return ResponseEntity.ok("Usuario deshabilitado correctamente");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+        }
+    }
+
+    // Habilitar usuario
+    @PutMapping("/habilitar/{email}")
+    public ResponseEntity<String> habilitarUsuario(@PathVariable String email) {
+        email = URLDecoder.decode(email, StandardCharsets.UTF_8);
+
+        boolean resultado = uservice.habilitarUsuarioPorEmail(email);
+        if (resultado) {
+            return ResponseEntity.ok("Usuario habilitado correctamente");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+        }
+    }
 }
-
- 
-

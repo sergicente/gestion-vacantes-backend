@@ -63,5 +63,6 @@ public class CategoriaServiceImpl implements CategoriaService{
 		// TODO Auto-generated method stub
 		return crepo.findByNombre(nombreCategoria);
 	}
+	
 
 }
