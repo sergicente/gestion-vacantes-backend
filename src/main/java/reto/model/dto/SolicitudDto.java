@@ -6,16 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SolicitudDto implements Serializable{
-	
+public class SolicitudDto implements Serializable {
     
-	private static final long serialVersionUID = 1L;
-	
-	private int idSolicitud;
+    private static final long serialVersionUID = 1L;
+
+    private int idSolicitud;
     private LocalDate fecha;
     private String archivo;
     private String comentarios;
@@ -25,6 +23,9 @@ public class SolicitudDto implements Serializable{
     private String email;
     private String nombreVacante;
 
-    
-}
+    // Información del usuario solicitante
+    private String emailUsuario;
+    private String nombreUsuario;
 
+
+}

@@ -10,12 +10,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reto.model.dto.UsuarioDto;
+import reto.model.entity.Empresa;
 import reto.model.entity.Usuario;
+import reto.model.repository.EmpresaRepository;
 import reto.model.service.UsuarioService;
 
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
+<<<<<<< HEAD
 
     @Autowired
     private UsuarioService uservice;
@@ -24,6 +27,18 @@ public class UsuarioController {
     private ModelMapper modelMapper;
 
     // Devuelve todos los usuarios
+=======
+	
+	@Autowired
+	private UsuarioService uservice;
+	 @Autowired
+	    private ModelMapper modelMapper;
+	 
+	 @Autowired
+	 private EmpresaRepository empresaRepository;
+	
+    // Devuelve todas las empresas
+>>>>>>> a10871a144f4ce8652202bd021382f03c1871616
     @GetMapping
     public List<Usuario> obtenerTodos() {
         return uservice.buscarTodos();
@@ -91,6 +106,27 @@ public class UsuarioController {
         UsuarioDto usuarioDtoRespuesta = modelMapper.map(usuarioModificado, UsuarioDto.class);  
         return new ResponseEntity<>(usuarioDtoRespuesta, HttpStatus.OK);  // 200 OK si la modificación es exitosa
     }
+    
+    @PostMapping("/login")
+    public ResponseEntity<UsuarioDto> loginUsuario(@RequestBody UsuarioDto usuarioLoginDto) {
+        Usuario usuario = uservice.buscar(usuarioLoginDto.getEmail());
+
+        if (usuario == null || !usuario.getPassword().equals(usuarioLoginDto.getPassword())) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        UsuarioDto usuarioDto = modelMapper.map(usuario, UsuarioDto.class);
+
+        if ("EMPRESA".equals(usuario.getRol())) {
+            List<Empresa> empresas = empresaRepository.findByEmailEmpresa(usuario.getEmail());
+            if (!empresas.isEmpty()) {
+                usuarioDto.setIdEmpresa(empresas.get(0).getIdEmpresa());
+            }
+        }
+
+        return new ResponseEntity<>(usuarioDto, HttpStatus.OK);
+    }
+
 
     // Deshabilitar usuario
     @PutMapping("/deshabilitar/{email}")

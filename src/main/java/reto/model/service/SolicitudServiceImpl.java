@@ -1,6 +1,7 @@
 package reto.model.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,102 +13,111 @@ import reto.model.entity.Vacante;
 import reto.model.repository.SolicitudRepository;
 
 @Service
-public class SolicitudServiceImpl implements SolicitudService{
-	
-	@Autowired
-	private SolicitudRepository srepo;
-	@Autowired
-	private UsuarioService userv;
-	@Autowired
-	private VacanteService vserv;
-	
+public class SolicitudServiceImpl implements SolicitudService {
 
-	@Override
-	public Solicitud buscar(Integer clave) {
-		return srepo.findById(clave).orElse(null);
-	}
+    @Autowired
+    private SolicitudRepository srepo;
+    @Autowired
+    private UsuarioService userv;
+    @Autowired
+    private VacanteService vserv;
 
-	@Override
-	public List<Solicitud> buscarTodos() {
-		return srepo.findAll();
-	}
+    @Override
+    public Solicitud buscar(Integer clave) {
+        return srepo.findById(clave).orElse(null);
+    }
 
-	@Override
-	public Solicitud insertar(Solicitud entidad) {
-	    return srepo.save(entidad);
-	}
+    @Override
+    public List<Solicitud> buscarTodos() {
+        return srepo.findAll();
+    }
 
-	@Override
-	public Solicitud modificar(Solicitud entidad) {
-		try {
-			if(srepo.existsById(entidad.getIdSolicitud())) {
-				return srepo.save(entidad);
-			}else {
-				return null;
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+    @Override
+    public Solicitud insertar(Solicitud entidad) {
+        return srepo.save(entidad);
+    }
 
-	@Override
-	public int borrar(Integer clave) {
-		try {
-			if(srepo.existsById(clave)) {
-				srepo.deleteById(clave);
-				return 1;
-			}else {
-				return 0;
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-			return -1;
-		}
-	}
-		
-	public Solicitud enviarSolicitud(Solicitud solicitud) {
-	    // Usa las entidades ya validadas en el controlador
-	    Vacante vacante = solicitud.getVacante();
-	    String email = solicitud.getUsuario().getEmail();
-	    
-	    if (vacante == null || email == null) {
-	        throw new IllegalArgumentException("Vacante o usuario no proporcionados");
-	    }
+    @Override
+    public Solicitud modificar(Solicitud entidad) {
+        try {
+            if (srepo.existsById(entidad.getIdSolicitud())) {
+                return srepo.save(entidad);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-	    if (vacante.getEstatus() != Estatus.CREADA) {
-	        throw new IllegalArgumentException("La vacante no está disponible");
-	    }
+    @Override
+    public int borrar(Integer clave) {
+        try {
+            if (srepo.existsById(clave)) {
+                srepo.deleteById(clave);
+                return 1;
+            } else {
+                return 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
 
-	    solicitud.setEstado(0);
-	    return srepo.save(solicitud);
-	}
+    @Override
+    public Solicitud enviarSolicitud(Solicitud solicitud) {
+        Vacante vacante = solicitud.getVacante();
+        String email = solicitud.getUsuario().getEmail();
 
-	public List <Solicitud> findBySolicitudPorUsuario (String email) {
-		return srepo.findByUsuarioEmail(email);
-		}
-	
-	public void cancelarSolicitud(int idSolicitud) {
-	    Solicitud solicitud = srepo.findById(idSolicitud)
-	        .orElseThrow();
+        if (vacante == null || email == null) {
+            throw new IllegalArgumentException("Vacante o usuario no proporcionados");
+        }
 
-	    solicitud.setEstado(2);
+        if (vacante.getEstatus() != Estatus.CREADA) {
+            throw new IllegalArgumentException("La vacante no está disponible");
+        }
 
-	    srepo.save(solicitud);
-	}
-	  public List<Solicitud> buscarSolicitudesPorVacante(Integer idVacante) {
-	        Vacante vacante = vserv.buscar(idVacante);  
-	        if (vacante == null) {
-	            throw new IllegalArgumentException("Vacante no encontrada");
-	        }
-	        return srepo.findByVacante(vacante);  // Método en el repositorio que filtra por vacante
-	    }
+        solicitud.setEstado(0);
+        return srepo.save(solicitud);
+    }
 
-	@Override
-	public Boolean buscarSolicitudExistente(String email, Integer idVacante) {
-		return srepo.existsByUsuarioEmailAndVacanteIdVacante(email, idVacante);
-	}
-	    
+    @Override
+    public List<Solicitud> findBySolicitudPorUsuario(String email) {
+        return srepo.findByUsuarioEmail(email);
+    }
+
+    @Override
+    public void cancelarSolicitud(int idSolicitud) {
+        Solicitud solicitud = srepo.findById(idSolicitud)
+                .orElseThrow();
+        solicitud.setEstado(2);
+        srepo.save(solicitud);
+    }
+
+    @Override
+    public List<Solicitud> buscarSolicitudesPorVacante(Integer idVacante) {
+        Vacante vacante = vserv.buscar(idVacante);
+        if (vacante == null) {
+            throw new IllegalArgumentException("Vacante no encontrada");
+        }
+        return srepo.findByVacante(vacante);
+    }
+
+    @Override
+    public Boolean buscarSolicitudExistente(String email, Integer idVacante) {
+        return srepo.existsByUsuarioEmailAndVacanteIdVacante(email, idVacante);
+    }
+
+    @Override
+    public List<Solicitud> buscarSolicitudesPorEmpresa(Integer empresaId) {
+        List<Vacante> vacantes = vserv.buscarPorEmpresa(empresaId);
+        List<Solicitud> todas = new ArrayList<>();
+        for (Vacante v : vacantes) {
+            List<Solicitud> solicitudes = srepo.findByVacante(v);
+            todas.addAll(solicitudes);
+        }
+        return todas;
+    }
 }
-
-
