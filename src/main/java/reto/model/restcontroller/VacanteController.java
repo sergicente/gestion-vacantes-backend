@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reto.model.dto.SolicitudDto;
 import reto.model.dto.VacanteDto;
@@ -44,6 +45,8 @@ public class VacanteController {
     public List<Vacante> obtenerTodos() {
         return vservice.buscarTodos();
     }
+    
+    
     
     @GetMapping("/creadas")
     public List<Vacante> obtenerTodasLasVacantesCreadas() {
@@ -148,6 +151,16 @@ public class VacanteController {
                 .map(solicitud -> modelMapper.map(solicitud, SolicitudDto.class))
                 .collect(Collectors.toList());
         return new ResponseEntity<>(solicitudesDto, HttpStatus.OK);
+    }
+    
+    
+    @GetMapping("/buscar")
+    public ResponseEntity<List<VacanteDto>> buscarVacantes(@RequestParam String termino) {
+        List<Vacante> vacantes = vservice.buscarPorNombreODescripcion(termino, termino);
+        List<VacanteDto> vacantesDto = vacantes.stream()
+                .map(v -> modelMapper.map(v, VacanteDto.class))
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(vacantesDto, HttpStatus.OK);
     }
 }
 

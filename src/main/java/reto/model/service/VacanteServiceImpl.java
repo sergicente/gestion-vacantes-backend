@@ -103,6 +103,13 @@ public class VacanteServiceImpl implements VacanteService{
 		   return vrepo.findSolicitudesByVacanteId(idVacante);
 	}
 
+	@Override
+	public List<Vacante> buscarPorNombreODescripcion(String nombre,
+			String descripcion) {
+		// TODO Auto-generated method stub
+		return vrepo.findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(nombre, descripcion);
+	}
+
 
 
 
