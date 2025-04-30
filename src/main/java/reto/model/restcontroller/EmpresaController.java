@@ -7,9 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import reto.model.dto.AltaEmpresaResponseDto;
+import reto.model.dto.EmpresaConUsuarioDto;
 import reto.model.dto.EmpresaDto;
 import reto.model.dto.VacanteDto;
 import reto.model.entity.Empresa;
+import reto.model.entity.EmpresaYPassword;
+import reto.model.entity.Usuario;
 import reto.model.entity.Vacante;
 import reto.model.service.EmpresaService;
 
@@ -99,5 +104,36 @@ public class EmpresaController {
 		// Retornar las vacantes como respuesta
 		return new ResponseEntity<>(vacantesDto, HttpStatus.OK);
 	}
+//metodo para obtener una contraseña aleatoriaa
+	 @PostMapping("/empresaUsuario")
+	    public ResponseEntity<AltaEmpresaResponseDto> crearEmpresaConUsuario(@RequestBody EmpresaConUsuarioDto empresaConUsuarioDto) {
+	        Empresa empresa = new Empresa();
+	        empresa.setCif(empresaConUsuarioDto.getCif());
+	        empresa.setNombreEmpresa(empresaConUsuarioDto.getNombreEmpresa());
+	        empresa.setDireccionFiscal(empresaConUsuarioDto.getDireccionFiscal());
+	        empresa.setPais(empresaConUsuarioDto.getPais());
+	        empresa.setEmailEmpresa(empresaConUsuarioDto.getEmail());
 
-}
+	        Usuario usuario = new Usuario();
+	        usuario.setEmail(empresaConUsuarioDto.getEmail());
+	        usuario.setNombre(empresaConUsuarioDto.getNombreEmpresa());
+	        usuario.setApellidos("");
+	        
+	        EmpresaYPassword resultado = eservice.insertarConUsuario(empresa, usuario);
+	        
+	        EmpresaDto empresaDto = new EmpresaDto();
+	        empresaDto.setIdEmpresa(resultado.getEmpresa().getIdEmpresa());
+	        empresaDto.setCif(resultado.getEmpresa().getCif());
+	        empresaDto.setNombreEmpresa(resultado.getEmpresa().getNombreEmpresa());
+	        empresaDto.setDireccionFiscal(resultado.getEmpresa().getDireccionFiscal());
+	        empresaDto.setPais(resultado.getEmpresa().getPais());
+	        empresaDto.setEmail(resultado.getEmpresa().getEmailEmpresa());
+
+	        AltaEmpresaResponseDto response = new AltaEmpresaResponseDto();
+	        response.setEmpresa(empresaDto);
+	        response.setUsuarioEmail(usuario.getEmail());
+	        response.setPasswordGenerada(resultado.getPassword());
+
+	        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	    }
+	}
