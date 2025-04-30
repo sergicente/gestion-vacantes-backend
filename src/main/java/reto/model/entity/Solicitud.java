@@ -36,4 +36,7 @@ public class Solicitud {
     @ManyToOne
     @JoinColumn(name = "email")
     private Usuario usuario;
+    
+
+    
 }

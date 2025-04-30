@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reto.model.dto.UsuarioDto;
+import reto.model.entity.Empresa;
 import reto.model.entity.Usuario;
+import reto.model.repository.EmpresaRepository;
 import reto.model.service.UsuarioService;
 
 @RestController
@@ -27,6 +29,9 @@ public class UsuarioController {
 	private UsuarioService uservice;
 	 @Autowired
 	    private ModelMapper modelMapper;
+	 
+	 @Autowired
+	 private EmpresaRepository empresaRepository;
 	
     // Devuelve todas las empresas
     @GetMapping
@@ -105,6 +110,27 @@ public class UsuarioController {
 
         return new ResponseEntity<>(usuarioDtoRespuesta, HttpStatus.OK);  // 200 OK si la modificación es exitosa
     }
+    
+    @PostMapping("/login")
+    public ResponseEntity<UsuarioDto> loginUsuario(@RequestBody UsuarioDto usuarioLoginDto) {
+        Usuario usuario = uservice.buscar(usuarioLoginDto.getEmail());
+
+        if (usuario == null || !usuario.getPassword().equals(usuarioLoginDto.getPassword())) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        UsuarioDto usuarioDto = modelMapper.map(usuario, UsuarioDto.class);
+
+        if ("EMPRESA".equals(usuario.getRol())) {
+            List<Empresa> empresas = empresaRepository.findByEmailEmpresa(usuario.getEmail());
+            if (!empresas.isEmpty()) {
+                usuarioDto.setIdEmpresa(empresas.get(0).getIdEmpresa());
+            }
+        }
+
+        return new ResponseEntity<>(usuarioDto, HttpStatus.OK);
+    }
+
 
 
 }

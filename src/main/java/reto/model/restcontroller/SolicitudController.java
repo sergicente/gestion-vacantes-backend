@@ -127,5 +127,30 @@ public class SolicitudController {
 				.map(solicitud -> modelMapper.map(solicitud, SolicitudDto.class)).collect(Collectors.toList());
 		return new ResponseEntity<>(solicitudesDto, HttpStatus.OK);
 	}
+	
+	
+	
+	@PutMapping("/{id}/responder")
+	public ResponseEntity<Void> responderSolicitud(@PathVariable Integer id, @RequestBody String respuesta) {
+	    Solicitud solicitud = sservice.buscar(id);
+	    if (solicitud == null) {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	    }
+
+	    sservice.enviarSolicitud(solicitud); // método reutilizado para guardar
+
+	    return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@GetMapping("/empresa/{empresaId}")
+	public ResponseEntity<List<SolicitudDto>> obtenerSolicitudesPorEmpresa(@PathVariable Integer empresaId) {
+	    List<Solicitud> solicitudes = sservice.buscarSolicitudesPorEmpresa(empresaId);
+	    List<SolicitudDto> solicitudesDto = solicitudes.stream()
+	        .map(s -> modelMapper.map(s, SolicitudDto.class))
+	        .collect(Collectors.toList());
+	    return new ResponseEntity<>(solicitudesDto, HttpStatus.OK);
+	}
+
+
 
 }

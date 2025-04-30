@@ -19,4 +19,7 @@ public interface VacanteRepository extends JpaRepository<Vacante, Integer>{
     
     @Query("SELECT s FROM Solicitud s WHERE s.vacante.id = :idVacante")
     List<Solicitud> findSolicitudesByVacanteId(@Param("idVacante") Integer idVacante);
+    
+    List<Vacante> findByEmpresaIdEmpresa(Integer idEmpresa);
+
 }

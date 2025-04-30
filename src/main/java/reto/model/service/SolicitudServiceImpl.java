@@ -1,6 +1,7 @@
 package reto.model.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -102,6 +103,20 @@ public class SolicitudServiceImpl implements SolicitudService{
 	        }
 	        return srepo.findByVacante(vacante);  // Método en el repositorio que filtra por vacante
 	    }
+	  
+	  @Override
+	  public List<Solicitud> buscarSolicitudesPorEmpresa(Integer empresaId) {
+	      List<Vacante> vacantes = vserv.buscarPorEmpresa(empresaId);
+	      List<Solicitud> todas = new ArrayList<>();
+	      for (Vacante v : vacantes) {
+	          List<Solicitud> solicitudes = srepo.findByVacante(v);
+	          todas.addAll(solicitudes);
+	      }
+	      return todas;
+	  }
+
+	  
+
 	    
 }
 

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +25,8 @@ public class Usuario {
 	private int enabled;
 	private LocalDate fechaRegistro;
 	private String rol;
+	
+
 	
 
 }

@@ -116,8 +116,8 @@ public class VacanteController {
     }
 
     // Cancelar vacante (cambiar el estado a CANCELADA)
-    @DeleteMapping("/{idVacante}")
-    public ResponseEntity<Void> cancelarVacante(@PathVariable Integer idVacante) {
+    @DeleteMapping("/borrar/{idVacante}")
+    public ResponseEntity<Void> borrarVacante(@PathVariable Integer idVacante) {
         Vacante vacante = vservice.buscar(idVacante);
         if (vacante == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -125,6 +125,7 @@ public class VacanteController {
         vservice.eliminarVacante(vacante);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 
     // Ver solicitudes de una vacante específica
     @GetMapping("/{idVacante}/solicitudes")
@@ -135,6 +136,16 @@ public class VacanteController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(solicitudesDto, HttpStatus.OK);
     }
+    
+    @GetMapping("/empresa/{idEmpresa}")
+    public ResponseEntity<List<VacanteDto>> obtenerVacantesDeEmpresa(@PathVariable Integer idEmpresa) {
+        List<Vacante> vacantes = vservice.buscarPorEmpresa(idEmpresa);
+        List<VacanteDto> vacantesDto = vacantes.stream()
+                .map(vacante -> modelMapper.map(vacante, VacanteDto.class))
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(vacantesDto, HttpStatus.OK);
+    }
+    
 }
 
 

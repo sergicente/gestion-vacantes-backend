@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reto.model.dto.EmpresaDto;
+import reto.model.dto.SolicitudDto;
 import reto.model.dto.VacanteDto;
 import reto.model.entity.Empresa;
 import reto.model.entity.Vacante;
@@ -99,5 +100,8 @@ public class EmpresaController {
 		// Retornar las vacantes como respuesta
 		return new ResponseEntity<>(vacantesDto, HttpStatus.OK);
 	}
+	
+
+
 
 }

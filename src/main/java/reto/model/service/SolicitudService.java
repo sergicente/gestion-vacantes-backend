@@ -9,4 +9,8 @@ public interface SolicitudService extends InterfaceGenericoCrud<Solicitud, Integ
     List<Solicitud> findBySolicitudPorUsuario(String email);
     void cancelarSolicitud(int idSolicitud);
     List<Solicitud> buscarSolicitudesPorVacante(Integer Idvacante);
+    List<Solicitud> buscarSolicitudesPorEmpresa(Integer empresaId);
+
+ 
+
 }

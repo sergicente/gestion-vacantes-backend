@@ -1,19 +1,25 @@
 package reto.model.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import reto.model.dto.EmpresaDto;
+import reto.model.dto.SolicitudDto;
 import reto.model.entity.Empresa;
+import reto.model.entity.Solicitud;
 import reto.model.entity.Vacante;
 import reto.model.repository.EmpresaRepository;
+import reto.model.repository.SolicitudRepository;
 @Service
 public class EmpresaServiceImpl implements EmpresaService{
 	
 	@Autowired
 	private EmpresaRepository erepo;
+	@Autowired
+	private SolicitudRepository srepo;
 
 	@Override
 	public Empresa buscar(Integer clave) {
@@ -75,5 +81,5 @@ public class EmpresaServiceImpl implements EmpresaService{
 	public List<EmpresaDto> obtenerEmpresasConNumeroVacantes() {
 		return erepo.obtenerEmpresasConNumeroVacantes();
 	}
-
+	
 }
