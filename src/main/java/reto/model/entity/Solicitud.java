@@ -33,8 +33,8 @@ public class Solicitud {
     @JoinColumn(name = "id_vacante")
     private Vacante vacante;
 
-//    @ManyToOne
-//    @JoinColumn(name = "email")
-//    private Usuario usuario;
-    private String email;
+    @ManyToOne
+    @JoinColumn(name = "email")
+    private Usuario usuario;
+//    private String email;
 }

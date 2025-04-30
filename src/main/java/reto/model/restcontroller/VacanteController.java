@@ -39,13 +39,27 @@ public class VacanteController {
 	private ModelMapper modelMapper;
 
 	
-    // Devuelve todas las empresas
+    // Devuelve todas las vacantes
     @GetMapping
     public List<Vacante> obtenerTodos() {
         return vservice.buscarTodos();
     }
+    
+    @GetMapping("/creadas")
+    public List<Vacante> obtenerTodasLasVacantesCreadas() {
+        List<Vacante> vacantes = vservice.buscarTodos();
+        List<Vacante> vacantesCreadas = new java.util.ArrayList<>();
 
-    // Devuelve una empresa por su id
+        for (Vacante v : vacantes) {
+            if (v.getEstatus() == Estatus.CREADA) {
+                vacantesCreadas.add(v);
+            }
+        }
+
+        return vacantesCreadas;
+    }
+
+    // Devuelve una vacante por su id
     @GetMapping("/{id}")
     public Vacante obtenerUno(@PathVariable int id) {
         return vservice.buscar(id);
