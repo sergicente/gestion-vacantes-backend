@@ -15,9 +15,13 @@ public interface VacanteRepository extends JpaRepository<Vacante, Integer>{
 
     List<Vacante> findByEstatus(Estatus estatus);
     List<Vacante> findByCategoria(Categoria categoria);
-    List<Vacante> findByEmpresa(Empresa empresa);
-    List<Vacante> findByEmpresaIdEmpresa(Integer idEmpresa);
     @Query("SELECT s FROM Solicitud s WHERE s.vacante.id = :idVacante")
     List<Solicitud> findSolicitudesByVacanteId(@Param("idVacante") Integer idVacante);
-    List<Vacante> findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(String nombre, String descripcion);
-}
+    List<Vacante> findByEstatusAndNombreContainingIgnoreCaseOrEstatusAndDescripcionContainingIgnoreCase(
+    	    Estatus estatus1, String nombre,
+    	    Estatus estatus2, String descripcion
+    	);
+    List<Vacante> findAllByEmpresaAndEstatus(Empresa empresa, Estatus estatus);
+    List<Vacante> findAllByEmpresa(Empresa empresa);
+
+    }

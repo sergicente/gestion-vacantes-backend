@@ -170,8 +170,9 @@ public class VacanteController {
     
     
     @GetMapping("/empresa/{idEmpresa}")
-    public ResponseEntity<List<VacanteDto>> obtenerVacantesPorEmpresa(@PathVariable Integer idEmpresa) {
-        List<Vacante> vacantes = vservice.buscarPorEmpresa(idEmpresa);
+    public ResponseEntity<List<VacanteDto>> obtenerVacantesPorEmpresa(@PathVariable Empresa idEmpresa) {
+        List<Vacante> vacantes = vservice.findAllByEmpresa(idEmpresa);
+        System.out.println("holaaaaaa!");
         List<VacanteDto> vacantesDto = vacantes.stream()
                 .map(v -> modelMapper.map(v, VacanteDto.class))
                 .collect(Collectors.toList());

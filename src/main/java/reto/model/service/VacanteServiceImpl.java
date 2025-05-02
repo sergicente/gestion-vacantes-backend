@@ -108,30 +108,34 @@ public class VacanteServiceImpl implements VacanteService{
     }
     
 
-    @Override
-    public List<Vacante> buscarVacantesPorEmpresa(Empresa empresa) {
-        return vrepo.findByEmpresa(empresa);
-}
 
 	@Override
 	public List<Solicitud> buscarSolicitudesPorVacante(Integer idVacante) {
-		// TODO Auto-generated method stub
 		   return vrepo.findSolicitudesByVacanteId(idVacante);
 	}
 
 	@Override
-	public List<Vacante> buscarPorNombreODescripcion(String nombre,
-			String descripcion) {
-		// TODO Auto-generated method stub
-		return vrepo.findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(nombre, descripcion);
+	public List<Vacante> buscarPorNombreODescripcion(String nombre, String descripcion) {
+	    return vrepo.findByEstatusAndNombreContainingIgnoreCaseOrEstatusAndDescripcionContainingIgnoreCase(
+	        Estatus.CREADA, nombre,
+	        Estatus.CREADA, descripcion
+	    );
 	}
 
 	@Override
-	public List<Vacante> buscarPorEmpresa(Integer idEmpresa) {
-		// TODO Auto-generated method stub
-		return vrepo.findByEmpresaIdEmpresa(idEmpresa);
-
+	public List<Vacante> findAllByEmpresaAndEstatus(Integer idEmpresa) {
+	    Empresa empresa = new Empresa();
+	    empresa.setIdEmpresa(idEmpresa);
+	    System.out.println("hola");
+	    return vrepo.findAllByEmpresaAndEstatus(empresa, Estatus.CREADA);
 	}
+	
+    @Override
+    public List<Vacante> findAllByEmpresa(Empresa empresa) {
+        return vrepo.findAllByEmpresa(empresa);
+    }
+
+
 
 
 

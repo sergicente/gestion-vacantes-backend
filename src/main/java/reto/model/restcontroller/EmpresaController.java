@@ -17,6 +17,7 @@ import reto.model.entity.EmpresaYPassword;
 import reto.model.entity.Usuario;
 import reto.model.entity.Vacante;
 import reto.model.service.EmpresaService;
+import reto.model.service.VacanteService;
 
 
 @RestController
@@ -25,6 +26,8 @@ public class EmpresaController {
 
 	@Autowired
 	private EmpresaService eservice;
+	@Autowired
+	private VacanteService vservice;
 	@Autowired
 	private ModelMapper modelMapper;
 
@@ -94,14 +97,17 @@ public class EmpresaController {
 	public ResponseEntity<List<VacanteDto>> obtenerVacantesDeEmpresa(@PathVariable Integer id) {
 		Empresa empresa = eservice.buscar(id);
 
-		// Buscar las vacantes asociadas a esa empresa
-		List<Vacante> vacantes = eservice.buscarVacantesPorEmpresa(empresa);
+		if (empresa == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 
-		// Convertir las vacantes a DTOs
-		List<VacanteDto> vacantesDto = vacantes.stream().map(vacante -> modelMapper.map(vacante, VacanteDto.class))
+		// Filtrar vacantes con estatus CREADA
+		List<Vacante> vacantes = vservice.findAllByEmpresaAndEstatus(id);
+
+		List<VacanteDto> vacantesDto = vacantes.stream()
+				.map(vacante -> modelMapper.map(vacante, VacanteDto.class))
 				.collect(Collectors.toList());
 
-		// Retornar las vacantes como respuesta
 		return new ResponseEntity<>(vacantesDto, HttpStatus.OK);
 	}
 //metodo para obtener una contraseña aleatoriaa
