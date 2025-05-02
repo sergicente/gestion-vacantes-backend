@@ -117,4 +117,9 @@ public class EmpresaServiceImpl implements EmpresaService{
 	    }
 	    return password.toString();
 	}
+
+	@Override
+	public Empresa findByEmail(String email) {
+		return erepo.findByEmailEmpresa(email);
+	}
 }

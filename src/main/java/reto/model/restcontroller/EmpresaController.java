@@ -136,4 +136,17 @@ public class EmpresaController {
 
 	        return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	    }
+	 
+	 
+	 
+	 //metodo para encontrar la empresa mediante el email
+	    @GetMapping("/email/{email}")
+	    public ResponseEntity<Empresa> getEmpresaByEmail(@PathVariable String email) {
+	        Empresa empresa = eservice.findByEmail(email);
+	        if (empresa != null) {
+	            return ResponseEntity.ok(empresa);
+	        } else {
+	            return ResponseEntity.notFound().build();
+	        }
+	    }
 	}

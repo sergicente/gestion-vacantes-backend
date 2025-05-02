@@ -12,8 +12,7 @@ public interface EmpresaService extends InterfaceGenericoCrud<Empresa, Integer>{
 
 	List<Vacante> buscarVacantesPorEmpresa(Empresa empresa);
 	List<EmpresaDto> obtenerEmpresasConNumeroVacantes();
-    // Método para generar una contraseña aleatoria
-    
-     EmpresaYPassword insertarConUsuario(Empresa empresa, Usuario usuario);
+    EmpresaYPassword insertarConUsuario(Empresa empresa, Usuario usuario);
+    Empresa findByEmail(String email);
     
 }

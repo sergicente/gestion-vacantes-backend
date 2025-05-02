@@ -18,4 +18,5 @@ public interface EmpresaRepository extends JpaRepository<Empresa, Integer>{
 		       "FROM Empresa e LEFT JOIN Vacante v ON v.empresa = e " +
 		       "GROUP BY e.idEmpresa, e.cif, e.nombreEmpresa, e.direccionFiscal, e.pais, e.emailEmpresa")
 		List<EmpresaDto> obtenerEmpresasConNumeroVacantes();
+		Empresa findByEmailEmpresa(String email);
 }
