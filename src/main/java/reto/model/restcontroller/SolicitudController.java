@@ -182,4 +182,11 @@ public class SolicitudController {
             return ResponseEntity.internalServerError().build();
         }
     }
+    
+    @PutMapping("/aceptar/{idSolicitud}")
+    public ResponseEntity<?> aceptarSolicitud(@PathVariable int idSolicitud) {
+    	sservice.aceptarSolicitud(idSolicitud);
+        return ResponseEntity.ok().build();
+    }
+
 }

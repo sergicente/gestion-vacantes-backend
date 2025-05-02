@@ -17,4 +17,6 @@ public interface SolicitudService extends InterfaceGenericoCrud<Solicitud, Integ
     Boolean buscarSolicitudExistente(String email, Integer idVacante);
 
     List<Solicitud> buscarSolicitudesPorEmpresa(Integer empresaId);
+    
+    void aceptarSolicitud(int idSolicitud);
 }

@@ -21,5 +21,7 @@ public interface VacanteRepository extends JpaRepository<Vacante, Integer> {
 
     List<Vacante> findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(String nombre, String descripcion);
     List<Vacante> findByEmpresaIdEmpresa(Integer idEmpresa);
+    Vacante save(Vacante vacante);
+
 
 }

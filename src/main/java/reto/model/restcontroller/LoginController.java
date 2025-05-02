@@ -14,7 +14,7 @@ import reto.model.entity.Usuario;
 import reto.model.service.UsuarioService;
 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api")
 public class LoginController {
     @Autowired
     private UsuarioService usuarioService;

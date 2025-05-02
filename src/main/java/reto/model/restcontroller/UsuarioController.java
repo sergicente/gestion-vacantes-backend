@@ -18,7 +18,6 @@ import reto.model.service.UsuarioService;
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
-<<<<<<< HEAD
 
     @Autowired
     private UsuarioService uservice;
@@ -27,18 +26,13 @@ public class UsuarioController {
     private ModelMapper modelMapper;
 
     // Devuelve todos los usuarios
-=======
 	
-	@Autowired
-	private UsuarioService uservice;
-	 @Autowired
-	    private ModelMapper modelMapper;
+
 	 
 	 @Autowired
 	 private EmpresaRepository empresaRepository;
 	
     // Devuelve todas las empresas
->>>>>>> a10871a144f4ce8652202bd021382f03c1871616
     @GetMapping
     public List<Usuario> obtenerTodos() {
         return uservice.buscarTodos();

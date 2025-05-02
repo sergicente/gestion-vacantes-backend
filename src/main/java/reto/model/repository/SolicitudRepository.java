@@ -12,5 +12,8 @@ public interface SolicitudRepository extends JpaRepository<Solicitud, Integer> {
     List<Solicitud> findByVacante(Vacante vacante);
     boolean existsByUsuarioEmailAndVacanteIdVacante(String email, Integer idVacante);
     List<Solicitud> findByVacanteEmpresaIdEmpresa(int idEmpresa);
+    List<Solicitud> findByVacanteIdVacanteAndIdSolicitudNot(int idVacante, int idSolicitud);
+    List<Solicitud> findByVacanteIdVacante(int idVacante);
+
 
 }
