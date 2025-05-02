@@ -8,6 +8,7 @@ public interface SolicitudService extends InterfaceGenericoCrud<Solicitud, Integ
     Solicitud enviarSolicitud(Solicitud solicitud);
     List<Solicitud> findBySolicitudPorUsuario(String email);
     void cancelarSolicitud(int idSolicitud);
+    void asignarSolicitud(int idSolicitud);
     List<Solicitud> buscarSolicitudesPorVacante(Integer Idvacante);
     Boolean buscarSolicitudExistente(String email, Integer idVacante);
 }

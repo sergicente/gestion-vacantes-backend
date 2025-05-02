@@ -146,14 +146,41 @@ public class SolicitudController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
+	
+	@PutMapping("/{vacanteId}/asignar/{solicitudId}")
+	public ResponseEntity<Void> asignarSolicitud(@PathVariable Integer vacanteId, @PathVariable Integer solicitudId) {
+		try {
+			Vacante vacante = vservice.buscar(vacanteId);
+			Solicitud solicitud = sservice.buscar(solicitudId);
+			vservice.asignarVacante(vacante, solicitud);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
 
 	// Endpoint para ver las solicitudes de una vacante
 	@GetMapping("/vacante/{vacanteId}")
 	public ResponseEntity<List<SolicitudDto>> verSolicitudesPorVacante(@PathVariable Integer vacanteId) {
-		List<Solicitud> solicitudes = sservice.buscarSolicitudesPorVacante(vacanteId);
-		List<SolicitudDto> solicitudesDto = solicitudes.stream()
-				.map(solicitud -> modelMapper.map(solicitud, SolicitudDto.class)).collect(Collectors.toList());
-		return new ResponseEntity<>(solicitudesDto, HttpStatus.OK);
+	    List<Solicitud> solicitudes = sservice.buscarSolicitudesPorVacante(vacanteId);
+
+	    List<SolicitudDto> solicitudesDto = solicitudes.stream().map(solicitud -> {
+	        SolicitudDto dto = modelMapper.map(solicitud, SolicitudDto.class);
+
+	        // Añadir manualmente el email del usuario
+	        if (solicitud.getUsuario() != null) {
+	            dto.setEmail(solicitud.getUsuario().getEmail());
+	        }
+
+	        // Añadir manualmente el nombre de la vacante
+	        if (solicitud.getVacante() != null) {
+	            dto.setNombreVacante(solicitud.getVacante().getNombre());
+	        }
+
+	        return dto;
+	    }).collect(Collectors.toList());
+
+	    return new ResponseEntity<>(solicitudesDto, HttpStatus.OK);
 	}
 	
 	// Endpoint para ver si ya existe una solicitud

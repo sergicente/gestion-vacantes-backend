@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import reto.model.entity.Categoria;
 import reto.model.entity.Empresa;
+import reto.model.entity.Estatus;
 
 @Data
 @NoArgsConstructor
@@ -27,6 +28,8 @@ public class VacanteDto implements Serializable {
     private String detalles;
     private Empresa empresa;
     private Categoria categoria;
+    private String estatus;
+
 
 
 }

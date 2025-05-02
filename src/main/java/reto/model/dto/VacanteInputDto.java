@@ -20,9 +20,9 @@ public class VacanteInputDto implements Serializable {
 	private String descripcion;
 	private LocalDate fecha;
 	private double salario;
-	private boolean destacado;
 	private String imagen;
 	private String detalles;
 	private int idEmpresa;
 	private int idCategoria;
+	private int destacado;
 }

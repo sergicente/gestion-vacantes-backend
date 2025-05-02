@@ -12,15 +12,14 @@ import reto.model.entity.Vacante;
 import reto.model.repository.SolicitudRepository;
 
 @Service
-public class SolicitudServiceImpl implements SolicitudService{
-	
+public class SolicitudServiceImpl implements SolicitudService {
+
 	@Autowired
 	private SolicitudRepository srepo;
 	@Autowired
 	private UsuarioService userv;
 	@Autowired
 	private VacanteService vserv;
-	
 
 	@Override
 	public Solicitud buscar(Integer clave) {
@@ -34,18 +33,18 @@ public class SolicitudServiceImpl implements SolicitudService{
 
 	@Override
 	public Solicitud insertar(Solicitud entidad) {
-	    return srepo.save(entidad);
+		return srepo.save(entidad);
 	}
 
 	@Override
 	public Solicitud modificar(Solicitud entidad) {
 		try {
-			if(srepo.existsById(entidad.getIdSolicitud())) {
+			if (srepo.existsById(entidad.getIdSolicitud())) {
 				return srepo.save(entidad);
-			}else {
+			} else {
 				return null;
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -54,60 +53,66 @@ public class SolicitudServiceImpl implements SolicitudService{
 	@Override
 	public int borrar(Integer clave) {
 		try {
-			if(srepo.existsById(clave)) {
+			if (srepo.existsById(clave)) {
 				srepo.deleteById(clave);
 				return 1;
-			}else {
+			} else {
 				return 0;
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return -1;
 		}
 	}
-		
+
 	public Solicitud enviarSolicitud(Solicitud solicitud) {
-	    // Usa las entidades ya validadas en el controlador
-	    Vacante vacante = solicitud.getVacante();
-	    String email = solicitud.getUsuario().getEmail();
-	    
-	    if (vacante == null || email == null) {
-	        throw new IllegalArgumentException("Vacante o usuario no proporcionados");
-	    }
+		// Usa las entidades ya validadas en el controlador
+		Vacante vacante = solicitud.getVacante();
+		String email = solicitud.getUsuario().getEmail();
 
-	    if (vacante.getEstatus() != Estatus.CREADA) {
-	        throw new IllegalArgumentException("La vacante no está disponible");
-	    }
-
-	    solicitud.setEstado(0);
-	    return srepo.save(solicitud);
-	}
-
-	public List <Solicitud> findBySolicitudPorUsuario (String email) {
-		return srepo.findByUsuarioEmail(email);
+		if (vacante == null || email == null) {
+			throw new IllegalArgumentException("Vacante o usuario no proporcionados");
 		}
-	
-	public void cancelarSolicitud(int idSolicitud) {
-	    Solicitud solicitud = srepo.findById(idSolicitud)
-	        .orElseThrow();
 
-	    solicitud.setEstado(2);
+		if (vacante.getEstatus() != Estatus.CREADA) {
+			throw new IllegalArgumentException("La vacante no está disponible");
+		}
 
-	    srepo.save(solicitud);
+		solicitud.setEstado(0);
+		return srepo.save(solicitud);
 	}
-	  public List<Solicitud> buscarSolicitudesPorVacante(Integer idVacante) {
-	        Vacante vacante = vserv.buscar(idVacante);  
-	        if (vacante == null) {
-	            throw new IllegalArgumentException("Vacante no encontrada");
-	        }
-	        return srepo.findByVacante(vacante);  // Método en el repositorio que filtra por vacante
-	    }
+
+	public List<Solicitud> findBySolicitudPorUsuario(String email) {
+		return srepo.findByUsuarioEmail(email);
+	}
+
+	public void cancelarSolicitud(int idSolicitud) {
+		Solicitud solicitud = srepo.findById(idSolicitud).orElseThrow();
+
+		solicitud.setEstado(2);
+
+		srepo.save(solicitud);
+	}
+	
+	public void asignarSolicitud(int idSolicitud) {
+		Solicitud solicitud = srepo.findById(idSolicitud).orElseThrow();
+
+		solicitud.setEstado(1);
+
+		srepo.save(solicitud);
+	}
+
+	public List<Solicitud> buscarSolicitudesPorVacante(Integer idVacante) {
+		Vacante vacante = vserv.buscar(idVacante);
+		if (vacante == null) {
+			throw new IllegalArgumentException("Vacante no encontrada");
+		}
+		return srepo.findByVacante(vacante); // Método en el repositorio que filtra por vacante
+	}
 
 	@Override
 	public Boolean buscarSolicitudExistente(String email, Integer idVacante) {
 		return srepo.existsByUsuarioEmailAndVacanteIdVacante(email, idVacante);
 	}
-	    
+
 }
-
-

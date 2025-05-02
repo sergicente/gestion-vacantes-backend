@@ -87,6 +87,11 @@ public class VacanteController {
     	vacante.setDetalles(vacanteInputDto.getDetalles());
     	vacante.setCategoria(categoria);
     	vacante.setEmpresa(empresa);
+    	if(vacanteInputDto.getDestacado() == 1) {
+        	vacante.setDestacado(true);
+    	}else {
+    		vacante.setDestacado(false);
+    	}
     	
         Vacante nuevaVacante = vservice.publicarVacante(vacante);
         VacanteDto vacanteDtoRespuesta = modelMapper.map(nuevaVacante, VacanteDto.class); // Convertir de vuelta a DTO
@@ -157,6 +162,16 @@ public class VacanteController {
     @GetMapping("/buscar")
     public ResponseEntity<List<VacanteDto>> buscarVacantes(@RequestParam String termino) {
         List<Vacante> vacantes = vservice.buscarPorNombreODescripcion(termino, termino);
+        List<VacanteDto> vacantesDto = vacantes.stream()
+                .map(v -> modelMapper.map(v, VacanteDto.class))
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(vacantesDto, HttpStatus.OK);
+    }
+    
+    
+    @GetMapping("/empresa/{idEmpresa}")
+    public ResponseEntity<List<VacanteDto>> obtenerVacantesPorEmpresa(@PathVariable Integer idEmpresa) {
+        List<Vacante> vacantes = vservice.buscarPorEmpresa(idEmpresa);
         List<VacanteDto> vacantesDto = vacantes.stream()
                 .map(v -> modelMapper.map(v, VacanteDto.class))
                 .collect(Collectors.toList());

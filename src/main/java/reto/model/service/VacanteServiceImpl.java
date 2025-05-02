@@ -8,16 +8,20 @@ import reto.model.entity.Empresa;
 import reto.model.entity.Solicitud;
 import reto.model.entity.Vacante;
 import reto.model.entity.Estatus;
+import reto.model.repository.SolicitudRepository;
 import reto.model.repository.VacanteRepository;
 @Service
 public class VacanteServiceImpl implements VacanteService{
 	
 	@Autowired
 	private VacanteRepository vrepo;
-//	@Autowired
-//	private SolicitudService sserv;
+
 	@Autowired
 	private CategoriaService cserv;
+	
+	@Autowired
+	private SolicitudRepository srepo;
+
 
 	@Override
 	public Vacante buscar(Integer clave) {
@@ -78,10 +82,22 @@ public class VacanteServiceImpl implements VacanteService{
     }
     
     
-    public void asignarVacante(Vacante vacante, Solicitud solicitud) {
+    public void asignarVacante(Vacante vacante, Solicitud solicitudAsignada) {
         vacante.setEstatus(Estatus.CUBIERTA);
-        solicitud.setEstado(1);
+        solicitudAsignada.setEstado(1); // Asignada
+
+        // Guardar la vacante y la solicitud asignada
         vrepo.save(vacante);
+        srepo.save(solicitudAsignada);
+
+        // Obtener y cancelar el resto
+        List<Solicitud> otras = srepo.findByVacanteAndIdSolicitudNot(vacante, solicitudAsignada.getIdSolicitud());
+        System.out.println("Solicitudes a cancelar: " + otras.size());
+        for (Solicitud s : otras) {
+            s.setEstado(2); // Cancelada
+        }
+
+        srepo.saveAll(otras); // ¡Importante!
     }
     
     
@@ -108,6 +124,13 @@ public class VacanteServiceImpl implements VacanteService{
 			String descripcion) {
 		// TODO Auto-generated method stub
 		return vrepo.findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(nombre, descripcion);
+	}
+
+	@Override
+	public List<Vacante> buscarPorEmpresa(Integer idEmpresa) {
+		// TODO Auto-generated method stub
+		return vrepo.findByEmpresaIdEmpresa(idEmpresa);
+
 	}
 
 
