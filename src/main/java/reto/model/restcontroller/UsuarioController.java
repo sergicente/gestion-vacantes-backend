@@ -71,39 +71,38 @@ public class UsuarioController {
     }
 
     // Modificar un usuario existente
-    @PutMapping("/{email}")
-
+    @PutMapping("/modificar/{email}")
     public ResponseEntity<UsuarioDto> modificarUsuario(@PathVariable String email, @RequestBody UsuarioDto usuarioDto) {
-        // Verificar si el objeto usuarioDto es null
         if (usuarioDto == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 Bad Request si el DTO es null
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        // Verificar si los campos obligatorios están presentes en el DTO
         if (usuarioDto.getNombre() == null || usuarioDto.getApellidos() == null || usuarioDto.getRol() == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 Bad Request si falta algún campo esencial
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        // Buscar el usuario en la base de datos
-        Usuario usuarioExistente = uservice.buscar(email); 
+        Usuario usuarioExistente = uservice.buscar(email);
         if (usuarioExistente == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);  // 404 si el usuario no existe
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        // Mapear el DTO al modelo de entidad Usuario
-        Usuario usuario = modelMapper.map(usuarioDto, Usuario.class); 
-        usuario.setEmail(email);  // Asegurarse de que el email no se sobrescriba
+        // Mapear los campos actualizados
+        usuarioExistente.setNombre(usuarioDto.getNombre());
+        usuarioExistente.setApellidos(usuarioDto.getApellidos());
+        usuarioExistente.setRol(usuarioDto.getRol());
 
-        // Modificar el usuario
-        Usuario usuarioModificado = uservice.modificar(usuario);  
+        // Si se envía una nueva contraseña, actualizarla
+        if (usuarioDto.getPassword() != null && !usuarioDto.getPassword().isBlank()) {
+            usuarioExistente.setPassword(usuarioDto.getPassword()); // Asegúrate de codificarla si usas encoder
+        }
+
+        Usuario usuarioModificado = uservice.modificar(usuarioExistente);
         if (usuarioModificado == null) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);  // 500 si la modificación falla
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        // Mapear el usuario modificado a un DTO para la respuesta
-        UsuarioDto usuarioDtoRespuesta = modelMapper.map(usuarioModificado, UsuarioDto.class);  
-
-        return new ResponseEntity<>(usuarioDtoRespuesta, HttpStatus.OK);  // 200 OK si la modificación es exitosa
+        UsuarioDto usuarioDtoRespuesta = modelMapper.map(usuarioModificado, UsuarioDto.class);
+        return new ResponseEntity<>(usuarioDtoRespuesta, HttpStatus.OK);
     }
 
 
