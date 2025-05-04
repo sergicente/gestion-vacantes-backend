@@ -75,6 +75,8 @@ public class VacanteController {
         vacante.setDetalles(vacanteInputDto.getDetalles());
         vacante.setCategoria(categoria);
         vacante.setEmpresa(empresa);
+        vacante.setDestacado(vacanteInputDto.isDestacado()); 
+
 
         Vacante nuevaVacante = vservice.publicarVacante(vacante);
         VacanteDto vacanteDtoRespuesta = modelMapper.map(nuevaVacante, VacanteDto.class);
@@ -105,17 +107,35 @@ public class VacanteController {
     }
 
     @PutMapping("/{idVacante}")
-    public ResponseEntity<VacanteDto> modificarVacante(@PathVariable Integer idVacante, @RequestBody VacanteDto vacanteDto) {
+    public ResponseEntity<VacanteDto> modificarVacante(@PathVariable Integer idVacante,
+                                                       @RequestBody VacanteInputDto vacanteInputDto) {
         Vacante vacanteExistente = vservice.buscar(idVacante);
         if (vacanteExistente == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Vacante vacante = modelMapper.map(vacanteDto, Vacante.class);
-        vacante.setIdVacante(idVacante);
-        Vacante vacanteActualizada = vservice.modificar(vacante);
-        VacanteDto vacanteDtoRespuesta = modelMapper.map(vacanteActualizada, VacanteDto.class);
-        return new ResponseEntity<>(vacanteDtoRespuesta, HttpStatus.OK);
+
+        // Actualizar campos de la vacante existente
+        vacanteExistente.setNombre(vacanteInputDto.getNombre());
+        vacanteExistente.setDescripcion(vacanteInputDto.getDescripcion());
+        vacanteExistente.setFecha(vacanteInputDto.getFecha());
+        vacanteExistente.setSalario(vacanteInputDto.getSalario());
+        vacanteExistente.setImagen(vacanteInputDto.getImagen());
+        vacanteExistente.setDetalles(vacanteInputDto.getDetalles());
+
+        Categoria categoria = new Categoria();
+        categoria.setIdCategoria(vacanteInputDto.getIdCategoria());
+        vacanteExistente.setCategoria(categoria);
+
+        Empresa empresa = new Empresa();
+        empresa.setIdEmpresa(vacanteInputDto.getIdEmpresa());
+        vacanteExistente.setEmpresa(empresa);
+
+        Vacante vacanteActualizada = vservice.modificar(vacanteExistente);
+        VacanteDto respuesta = modelMapper.map(vacanteActualizada, VacanteDto.class);
+
+        return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
+
 
     // Cancelar vacante
     @DeleteMapping("/borrar/{idVacante}")
