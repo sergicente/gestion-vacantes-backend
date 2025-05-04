@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -76,13 +77,16 @@ public class CategoriaController {
 
 	    // Eliminar una categoría
 	    @DeleteMapping("/{id}")
-	    public ResponseEntity<Void> eliminarCategoria(@PathVariable Integer id) {
-	        Categoria categoria = cservice.buscar(id);
-	        if (categoria == null) {
-	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	    public ResponseEntity<?> eliminarCategoria(@PathVariable int id) {
+	        try {
+	        	cservice.borrar(id);
+	            return ResponseEntity.noContent().build();
+	        } catch (DataIntegrityViolationException e) {
+	            return ResponseEntity.status(HttpStatus.CONFLICT)
+	                    .body("No se puede eliminar la categoría porque tiene vacantes asociadas.");
+	        } catch (Exception e) {
+	            return ResponseEntity.internalServerError().body("Error interno al eliminar la categoría.");
 	        }
-	        cservice.borrar(id);
-	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	    }
 	}
 

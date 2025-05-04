@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import jakarta.persistence.EntityNotFoundException;
 import reto.model.entity.Categoria;
 import reto.model.repository.CategoriaRepository;
 
@@ -45,17 +47,13 @@ public class CategoriaServiceImpl implements CategoriaService{
 
 	@Override
 	public int borrar(Integer clave) {
-		try {
-			if(crepo.existsById(clave)) {
-				crepo.deleteById(clave);
-				return 1;
-			}else {
-				return 0;
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-			return -1;
+		if (!crepo.existsById(clave)) {
+			return 0;
 		}
+		
+		// Aquí no se captura la excepción, se deja propagar
+		crepo.deleteById(clave);
+		return 1;
 	}
 
 	@Override
