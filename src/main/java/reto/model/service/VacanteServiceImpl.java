@@ -84,7 +84,7 @@ public class VacanteServiceImpl implements VacanteService{
     
     public void asignarVacante(Vacante vacante, Solicitud solicitudAsignada) {
         vacante.setEstatus(Estatus.CUBIERTA);
-        solicitudAsignada.setEstado(1); // Asignada
+        solicitudAsignada.setEstado(1);
 
         // Guardar la vacante y la solicitud asignada
         vrepo.save(vacante);
@@ -94,10 +94,10 @@ public class VacanteServiceImpl implements VacanteService{
         List<Solicitud> otras = srepo.findByVacanteAndIdSolicitudNot(vacante, solicitudAsignada.getIdSolicitud());
         System.out.println("Solicitudes a cancelar: " + otras.size());
         for (Solicitud s : otras) {
-            s.setEstado(2); // Cancelada
+            s.setEstado(2);
         }
 
-        srepo.saveAll(otras); // ¡Importante!
+        srepo.saveAll(otras);
     }
     
     
@@ -134,6 +134,17 @@ public class VacanteServiceImpl implements VacanteService{
     public List<Vacante> findAllByEmpresa(Empresa empresa) {
         return vrepo.findAllByEmpresa(empresa);
     }
+
+	@Override
+	public void cambiarEstado(int idVacante, Estatus nuevoEstado) {
+		Vacante v = vrepo.findById(idVacante).orElse(null);
+		if(v != null) {
+			v.setEstatus(nuevoEstado);
+			vrepo.save(v);
+		}
+		
+		
+	}
 
 
 

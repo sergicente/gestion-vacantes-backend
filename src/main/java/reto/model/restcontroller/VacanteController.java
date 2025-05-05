@@ -190,6 +190,29 @@ public class VacanteController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(vacantesDto, HttpStatus.OK);
     }
+    
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<?> cambiarEstado(@PathVariable int id, @RequestParam String nuevoEstado) {
+        try {
+            Estatus estado = Estatus.valueOf(nuevoEstado.toUpperCase());
+            Vacante vacante = vservice.buscar(id);
+            
+            if (vacante == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vacante no encontrada");
+            }
+
+            vacante.setEstatus(estado);
+            vservice.modificar(vacante);
+
+            return ResponseEntity.ok("Estado actualizado correctamente");
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Estado inválido");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cambiar el estado");
+        }
+    }
+    
 }
 
 
