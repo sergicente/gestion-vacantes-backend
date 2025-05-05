@@ -29,9 +29,8 @@ public class VacanteDto implements Serializable {
     private Empresa empresa;
     private Categoria categoria;
     private String estatus;
-
-
-
+    private Integer idCategoria;
+    private Integer idEmpresa;
 }
 
 

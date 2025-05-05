@@ -130,8 +130,20 @@ public class VacanteController {
         if (vacanteExistente == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
         Vacante vacante = modelMapper.map(vacanteDto, Vacante.class);
         vacante.setIdVacante(idVacante);
+
+        Categoria categoria = new Categoria();
+        categoria.setIdCategoria(vacanteDto.getIdCategoria());
+        vacante.setCategoria(categoria);
+
+        Empresa empresa = new Empresa();
+        empresa.setIdEmpresa(vacanteDto.getIdEmpresa());
+        vacante.setEmpresa(empresa);
+
+        vacante.setEstatus(Estatus.valueOf(vacanteDto.getEstatus()));
+
         Vacante vacanteActualizada = vservice.modificar(vacante);
         VacanteDto vacanteDtoRespuesta = modelMapper.map(vacanteActualizada, VacanteDto.class);
         return new ResponseEntity<>(vacanteDtoRespuesta, HttpStatus.OK);
