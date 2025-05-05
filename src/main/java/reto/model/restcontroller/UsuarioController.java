@@ -104,6 +104,30 @@ public class UsuarioController {
         UsuarioDto usuarioDtoRespuesta = modelMapper.map(usuarioModificado, UsuarioDto.class);
         return new ResponseEntity<>(usuarioDtoRespuesta, HttpStatus.OK);
     }
+    
+ // Habilitar un usuario
+    @PutMapping("/habilitar/{email}")
+    public ResponseEntity<Void> habilitarUsuario(@PathVariable String email) {
+        Usuario usuario = uservice.buscar(email);
+        if (usuario == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        usuario.setEnabled(1);
+        uservice.modificar(usuario);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // Deshabilitar un usuario
+    @PutMapping("/deshabilitar/{email}")
+    public ResponseEntity<Void> deshabilitarUsuario(@PathVariable String email) {
+        Usuario usuario = uservice.buscar(email);
+        if (usuario == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        usuario.setEnabled(0);
+        uservice.modificar(usuario);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 
 }

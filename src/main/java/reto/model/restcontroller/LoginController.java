@@ -26,11 +26,19 @@ public class LoginController {
         Usuario usuario = usuarioService.buscar(email);
 
         if (usuario != null && usuario.getPassword().equals(password)) {
-            
+
+            if (usuario.getEnabled() == 0) {
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body("El usuario está deshabilitado. Contacta con un administrador.");
+            }
+
             session.setAttribute("usuarioLogueado", usuario);
             return ResponseEntity.ok(usuario);
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email o contraseña incorrectos");
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("Email o contraseña incorrectos");
     }
 }
