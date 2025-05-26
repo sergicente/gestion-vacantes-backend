@@ -1,5 +1,6 @@
 package reto.model.restcontroller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -184,10 +185,13 @@ public class VacanteController {
     @GetMapping("/empresa/{idEmpresa}")
     public ResponseEntity<List<VacanteDto>> obtenerVacantesPorEmpresa(@PathVariable Empresa idEmpresa) {
         List<Vacante> vacantes = vservice.findAllByEmpresa(idEmpresa);
-        System.out.println("holaaaaaa!");
-        List<VacanteDto> vacantesDto = vacantes.stream()
-                .map(v -> modelMapper.map(v, VacanteDto.class))
-                .collect(Collectors.toList());
+        List<VacanteDto> vacantesDto = new ArrayList<>();
+
+        for (Vacante vacante : vacantes) {
+            VacanteDto dto = modelMapper.map(vacante, VacanteDto.class);
+            vacantesDto.add(dto);
+        }
+
         return new ResponseEntity<>(vacantesDto, HttpStatus.OK);
     }
     
@@ -212,6 +216,8 @@ public class VacanteController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cambiar el estado");
         }
     }
+    
+    
     
 }
 

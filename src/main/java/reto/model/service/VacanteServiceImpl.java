@@ -101,25 +101,15 @@ public class VacanteServiceImpl implements VacanteService{
     }
     
     
-    
     public List<Vacante> filtrarVacantesPorCategoria(String nombreCategoria) {
         Categoria categoria = cserv.findByNombre(nombreCategoria);
         return vrepo.findByCategoria(categoria);
     }
-    
-
+ 
 
 	@Override
 	public List<Solicitud> buscarSolicitudesPorVacante(Integer idVacante) {
 		   return vrepo.findSolicitudesByVacanteId(idVacante);
-	}
-
-	@Override
-	public List<Vacante> buscarPorNombreODescripcion(String nombre, String descripcion) {
-	    return vrepo.findByEstatusAndNombreContainingIgnoreCaseOrEstatusAndDescripcionContainingIgnoreCase(
-	        Estatus.CREADA, nombre,
-	        Estatus.CREADA, descripcion
-	    );
 	}
 
 	@Override
@@ -134,7 +124,7 @@ public class VacanteServiceImpl implements VacanteService{
     public List<Vacante> findAllByEmpresa(Empresa empresa) {
         return vrepo.findAllByEmpresa(empresa);
     }
-
+    
 	@Override
 	public void cambiarEstado(int idVacante, Estatus nuevoEstado) {
 		Vacante v = vrepo.findById(idVacante).orElse(null);
@@ -142,13 +132,43 @@ public class VacanteServiceImpl implements VacanteService{
 			v.setEstatus(nuevoEstado);
 			vrepo.save(v);
 		}
-		
-		
+	}
+	
+	@Override
+	public List<Vacante> buscarPorNombreODescripcion(String nombre, String descripcion) {
+	    return vrepo.findByEstatusAndNombreContainingIgnoreCaseOrEstatusAndDescripcionContainingIgnoreCase(
+	        Estatus.CREADA, nombre,
+	        Estatus.CREADA, descripcion
+	    );
 	}
 
 
 
 
-
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
