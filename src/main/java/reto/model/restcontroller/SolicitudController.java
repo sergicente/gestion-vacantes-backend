@@ -93,8 +93,7 @@ public class SolicitudController {
 
 	    // Guardar archivo en disco
 	    String nombreArchivo = archivo.getOriginalFilename();
-	    Path rutaArchivo = Paths.get(System.getProperty("user.dir"), "uploads", nombreArchivo);
-
+	    Path rutaArchivo = Paths.get("/home/ubuntu/uploads", nombreArchivo);
 	    try {
 	        Files.createDirectories(rutaArchivo.getParent()); 
 	        archivo.transferTo(rutaArchivo.toFile()); 
@@ -193,8 +192,8 @@ public class SolicitudController {
 	@GetMapping("/archivo/{nombre}")
 	public ResponseEntity<Resource> descargarArchivo(@PathVariable String nombre) {
 	    try {
-	        Path ruta = Paths.get(System.getProperty("user.dir"), "uploads", nombre);
-	        Resource archivo = new UrlResource(ruta.toUri());
+	    	Path ruta = Paths.get("/home/ubuntu/uploads").resolve(nombre).normalize();
+	    	Resource archivo = new UrlResource(ruta.toUri());
 
 	        if (!archivo.exists()) {
 	            return ResponseEntity.notFound().build();
